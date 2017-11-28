@@ -1,0 +1,5 @@
+networkx (for visualizing structure)
+Hmmer (in biopython, hidden markov model)
+Keras + tensorflow (neural network)
+weblogo 3.5 (sequence logo)
+matplot lib (visualizing performance etc...)
