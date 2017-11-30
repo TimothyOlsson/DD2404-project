@@ -11,7 +11,7 @@ import pandas as pd
 from load_data import load_training
 
 dim = 50
-set_division = 0.7
+set_division = 0.2
 
 # Load training
 X, Y = load_training(dim, verbose=True)
@@ -54,7 +54,7 @@ model.add(Dense(1, activation='sigmoid'))
 
 print('Compiling model...')
 #Compile model
-sgd = keras.optimizers.SGD(lr=0.03, decay=1e-6, nesterov=True, momentum=0.9)
+sgd = keras.optimizers.SGD(lr=0.04, decay=1e-6, nesterov=True, momentum=0.9)
 model.compile(metrics=['binary_accuracy'],
               loss='binary_crossentropy',
               optimizer=sgd)
@@ -66,7 +66,7 @@ print(model.output_shape)
 
 # Fit the model
 try:
-    history = model.fit(X, Y, validation_split=0.3, epochs=300, batch_size=20, shuffle=True, verbose=1)
+    history = model.fit(X, Y, validation_split=0.2, epochs=250, batch_size=20, shuffle=True, verbose=1)
 except KeyboardInterrupt:
     print('\nStopped training...')
 
@@ -88,7 +88,7 @@ Increasing loss in validation, while increasing validation accuracy indicates
 overfitting!!!
 """
 
-print('Plotting data...')
+print('Plotting results...')
 # Plotting training
 import matplotlib.pyplot as plt
 # list all data in history
@@ -109,5 +109,6 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
+
 
 
