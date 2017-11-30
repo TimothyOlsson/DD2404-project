@@ -1,0 +1,27 @@
+#RNNs and LSTMs
+https://stats.stackexchange.com/questions/222584/difference-between-feedback-rnn-and-lstm-gru
+
+#Text classification (variable input)
+https://machinelearnings.co/text-classification-using-neural-networks-f5cd7b8765c6
+
+#Loading tarfiles
+https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.loadtxt.html
+https://docs.python.org/2/library/tarfile.html
+
+#HMM learn
+http://hmmlearn.readthedocs.io/en/latest/tutorial.html
+
+#Previous group, same project
+https://github.com/helderm/peptidr
+
+#LSTM
+https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/
+
+#Problems
+https://blog.slavv.com/37-reasons-why-your-neural-network-is-not-working-4020854bd607
+
+#1D test
+https://github.com/fchollet/keras/blob/master/examples/imdb_cnn.py
+https://statcompute.wordpress.com/2017/04/02/a-simple-convolutional-neural-network-for-the-binary-outcome/
+https://github.com/fchollet/keras/issues/1597
+https://keras.io/layers/pooling/
