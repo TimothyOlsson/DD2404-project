@@ -39,6 +39,58 @@ I managed to check and get data of training history. I divided the whole set int
 I managed to get the program to calculate on my GPU! This will speed up the training process by an order of magnitude, allowing me to run more complex models and even longer training sessions.
 
 #### 19:40
+I have reached a limit what I can do with my data. There are many paths that I can take now.
+
+I need more data to work with. The current data set is not sufficient for the type of training that I want to do.
+
+I can try to find more data on the web and add it to my data sets. I can resample my data and use as much as possible (by using smaller parts of the whole protein and not just the first part of it, where most signal pepties are). Resampling means that I need to change my code to work with partial sets.
+
+There are many problems with resampling and dividing the proteins into smaller subsets. One is that problems may occur if I cut the protein right on an important region of the protein, causing the NN to give bad results. Another problem is how I can decide if a protein has a signal peptide if only one region (ex c region) is present in the sample. The h region is a better indicator, but does this mean that the output data should have a "percentage" based value if a peptide is present or not? At the moment, there is only 0 (no signal peptide) or 1 (signal peptide present).
+
+I can tackle the first problem by introducing a LSTM region in the model. The LSTM will remember the last sample and store the information for a couple of samples. The difficult part is how this should be implemented or if it's even possible with the program that I'm using.
+
+I should also try to visualize the filters used in the CNN and checking where most of the attention is on the sequence, to find the cause for overfitting.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
