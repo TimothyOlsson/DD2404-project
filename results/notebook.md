@@ -66,21 +66,79 @@ IGNORE the samples, i.e. discard them
 ZERO the samples, i.e. fill the sequence with zeros until it is sufficiently long
 LOOP the samples, i.e. stitch up the partial sequence with the start of the full sequence. If the full sequence is shorter than cutoff, add multiple samples until its sufficiently long. 
 
-####12:00
+#### 12:00
 Found a database with signal peptides. I now have about 1500 more positive results, but I will need to add code to the loading script for using them too.
 
 If I use the resampling method, I can get as much as 95 000 samples instead of 2500. The problem is that most of the samples will then be negative, causing the model to fail. I will need a good distribution of positive and negative samples to improve the model further.
 
 It is also possible that my model and my way to predict the signal peptides are not sufficient enough. I will keep trying until I get good enough to see what patterns work and does not work until I determine if this method works or not.
 
+#### 13:30
+I made major improvements to the CNN.
+
+A confusion matrix can now be shown (but not plotted yet)
+
+Predictions are saved to a file
+
+Added more prints
+
+Parameters are saved and plotted
+
+#### 13:50
+I discovered that there are bacterial signal peptides in the database provided. This means that I can use bacterial signal peptides too. I have found another database with 850 000 (!) proteins. This might be just what I need to train the model.
+
+After training, I have concluded that there are some limitations:
+
+Amount of positive data (I can generate lots of negative data easily with the resampling)
+
+The model (since the acc converges at 95% for training and 70% for validation).
+
+I will try to do a more complicated model when I have all the data I need.
+
+#### 14:15
+New problem:
+How to download a lot of data at once
+How to deal with data where signal peptide location is not disclosed
 
 
+Solutions:
+
+Download every data that has the word "signal peptide".
+Signal peptide length is max 40 AA.
+http://www.cbs.dtu.dk/services/SignalP-1.1/sp_lengths.html, where most of them are 20 AA.
+
+Almost all proteins have the signal peptide in the start of the sequence. Use that data to fix more data.
+
+Cutoff should therefore be around 40 to 50 AA.
 
 
+#### 14:40
+I figured out how to download a lot of files from a FTP server. 
+
+Commands:
+$webclient = New-Object System.Net.WebClient 
+$ftp = ftp://ftp.ncbi.nlm.nih.gov/ncbi-asn1/protein_fasta/README.asn1.protein_fasta
+$path = "C:\" # NOTE: If permission denied, choose another folder
+$webclient.DownloadFile($ftp,$path)
+
+if multiple files, use *
+
+Might be more difficult than I predicted...
+
+### 2017-12-03
+#### 19:40
+It was not that hard. Paste in the ftp web link into a explorer and its opened!
+
+I now have 12 Gb of data that I can use for training. However, maybe only 0.5 Gb will be useful, but that is still more than the current amount of data that I have (2 mb). The problem that I have right now is that the computer needs 3 hours to download the files. The data needs to be reformatted to get out the needed files and I consider a script in C++ to be the best way to extract the sequences, due to the large data size.
+
+I have also been thinking in adding a way to add noise to the samples, to prevent overfitting. 
 
 
+#### 21:40
+I have downloaded all the files and extracted all sequences that have signal peptides
 
-
+#### 22:00
+Finished the confusion matrix plotting and have experimented with visualizing the weights and filters in the model. Parameters are also shown in a table
 
 
 
