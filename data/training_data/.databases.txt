@@ -1,1 +1,6 @@
 http://proline.bic.nus.edu.sg/spdb/download.html
+https://www.ncbi.nlm.nih.gov/protein/?term=signal%20peptide #Batch download
+ftp://ftp.ncbi.nlm.nih.gov/
+
+ftp://ftp.ncbi.nih.gov/refseq/ #Here be proteins
+ftp://ftp.ncbi.nlm.nih.gov/ncbi-asn1/protein_fasta/ #Here too
