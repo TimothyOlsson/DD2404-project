@@ -17,12 +17,12 @@ def read_fasta(file_contents):
                 _seq = []
             else:
                 _seq.append(line.rstrip('\n').upper())
-        sequences.append(''.join(_seq).upper()) #upper case
+        sequence_list.append(''.join(_seq).upper()) #upper case
         return name_list, sequence_list
 
     #String
     elif type(file_contents) is str:
-        file_contents = file_contents.split()
+        file_contents = file_contents.split('\n')
         for line in file_contents:
             if line.startswith('>'):
                 name_list.append(line)
