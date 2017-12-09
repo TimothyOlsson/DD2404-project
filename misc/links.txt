@@ -62,5 +62,16 @@ https://stats.stackexchange.com/questions/153531/what-is-batch-size-in-neural-ne
 #Powershell
 https://social.technet.microsoft.com/Forums/ie/en-US/ff18a705-eeee-4ba7-bd3e-2fcc9fd5cbee/using-powershell-to-download-from-ftp-site-file-name-has-wildcard?forum=ITCG
 
+#Keras layers
+https://github.com/fchollet/keras/issues/91
+
+#How to train GAN + tips
+https://github.com/soumith/ganhacks
+
+#Terminology precision etc...
+http://www.dataschool.io/simple-guide-to-confusion-matrix-terminology/
+
+#Overfitting
+https://stackoverflow.com/questions/40910857/how-to-interpret-increase-in-both-loss-and-accuracy
 
 
