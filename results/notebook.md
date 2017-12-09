@@ -140,10 +140,22 @@ I have downloaded all the files and extracted all sequences that have signal pep
 #### 22:00
 Finished the confusion matrix plotting and have experimented with visualizing the weights and filters in the model. Parameters are also shown in a table
 
+### 2017-12-06
+I have missed adding entries to the notebook.
+
+Lot's of things have changed for the model. I have found a good model that I can use for predictions.
+
+The extra data has been proven useful. It has reduced the overfittness and made the model more powerful.
+
+Lots of bugfixed and better plots.
 
 
+### 2017-12-09
+#### 14:40
+I have found a model that gives great results. The model has a lot of parameters and takes abouut 50 seconds per epochs with my cpu (i7-2600k oc 4.5 GHz), but less than 0.5 seconds with the gpu. Using the gpu results in about 100 times faster calculations! To train 1000 epochs, gpu would need 500 seconds (about 8 minutes) and the cpu about 50 000 seconds (about 14 hours). It was a great idea to use the gpu for the calculations :) The gpu scales very well with the model, which means that if I double the amount of parameters, the gpu training might take 12 minutes while the cpu might take 30 hours.
 
-
+#### 20:00
+I have made quite some progress. I noticed that adding small amounts of noise made the network less overfit. I have also added a function for checkpoints and early stoppings.
 
 
 
