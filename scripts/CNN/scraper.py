@@ -48,13 +48,14 @@ def scraper_worker(arg_list):
 
 def main_scraper(url):
     pages = 0
-    while True:
-        # Note: http://www.signalpeptide.de/index.php?m=listspdb_mammalia, remove /index.php...
-        url_first_part =  url.rsplit('/',1)[0]
+    # Note: http://www.signalpeptide.de/index.php?m=listspdb_mammalia, remove /index.php...
+    url_first_part =  url.rsplit('/',1)[0]
 
-        # Used to trick website it's a real browser
-        user_agent = {'Referer':url,
-                      'User-Agent': "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36"}
+    # Used to trick website it's a real browser
+    user_agent = {'Referer':url,
+                  'User-Agent': "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36"}
+
+    while True:
 
         # Get page
         print(f'Getting page {pages}...')
