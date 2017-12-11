@@ -157,22 +157,64 @@ I have found a model that gives great results. The model has a lot of parameters
 #### 20:00
 I have made quite some progress. I noticed that adding small amounts of noise made the network less overfit. I have also added a function for checkpoints and early stoppings.
 
+### 2017-12-10
+#### 13:30
+The real time plotting is a success! However, there are some performance issues.
+
+50 epochs, plot = 37.7 seconds
+150 epochs, plot = 130.3 seconds
+
+50 epochs, no plot = 29.6 seconds 
+150 epochs, no plot = 83.2 seconds
+
+Maybe spawining a new process that plots will help.
+
+#### 14:20
+After some tinkering with multiprocessing, I could not get it to work. The problem lies within multiprocessing and matplotlib. Matplotlib is not thread safe and multiprocessing on windows does not have forking like linux, which means that all processes needs to be added at the bottom of the code (if __name__="main":). This means that I have to divide the code in modules, which I am not ready to do yet.
+
+I need another solution...
+
+#### 14:50
+I have found a sufficient solution to my problem.
+
+Instead of drawing the plot multiple times, I will just add points to the plot and extend it. This keeps the performance loss constant throughout the training.
+
+50 epochs, plot = 38.6 seconds
+150 epochs, plot = 119.4 seconds
+
+50 epochs, no plot = 29.6 seconds 
+150 epochs, no plot = 83.2 seconds
+
+The performance loss is still huge, but the loss will not increase for longer trainings.
 
 
+#### 15:00
+Setting shared axes did not improve performance.
+
+#### 15:20
+Fixing axes did not improve performance
+
+#### 15:40
+The easy solution is simply to not have the graph plot in real time, but to update it at intervals that you choose. Every 100 epochs works great. The real time plotting has given me some insight how to improve the model and training. I can now reach 95% for the validation set.
+
+#### 17:10
+I have been thinking of using a .config file instead of argparser, due to the amount of variables that can be changed. Combining the two seems to be trivial, so I will focus on using one.
+
+#### 17:50
+When I implemented the .config file, I noticed how useless it was in this case. Having all parameters in the file is much mor intuitive. The argparser was good, but I believe that it yields too much confusion when using the program.
+
+#### 18:45
+The discriminator is way to powerful for the generator. When training, the generator can't fool the discriminator and loss increases rapidly. I believe that the discriminator memorizes the data (due to a large amount of parameters available) and stops generator from improving (i.e its a bad teacher). Ill try doing another model for the discriminator.
 
 
+### 2017-12-11
+I have discovered a fault in my data. By visualizing the filters shows that the CNN mostly keeps it's attention to the first amino acid. The problem is that when I'm doing the data augmentation (mentioned as "resampling" in previous entries), the N terminal always starts M, making the model only look for that property (a CNN that's detecting if it is at the N terminal is pretty useless and even more so if it just have 95% accuracy). This means that I need more negative data.
 
+However, I have 12 Gb of protein data where the majority is negative proteins (i.e proteins without signal peptides). Extracting the data yields way more than 20 Gb of data, so I had to add a function that compresses the data (i.e ignore protein name and cut out the first 40 base pairs).
 
+I constantly hunt for more data to use and I have discovered a way for me to get almost unlimited amounts of positive data! The Signal Peptide website has over 200 000 signal peptides and I wrote a simple scraper in two hours that can parse the whole the whole website and scrape every protein into fasta files. However, I need to be careful with the scraping since the script that I created is too powerful for the website to handle. The script creates 50 workers that work asynchronously that scrapes the data, but it slows down the website by a lot. Maybe I should add delays to the workers to slow down the scraping?
 
-
-
-
-
-
-
-
-
-
+I have also considered changing the way I rank amino acids. At the moment, there is no order in the classification of the amino acids. By setting similar amino acids and their corresponding numbers close to one another, I might be able to improve training. As you need to know for machine learning, bad data in, bad data out.
 
 
 
