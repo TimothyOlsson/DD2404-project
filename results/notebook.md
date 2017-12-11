@@ -216,6 +216,11 @@ I constantly hunt for more data to use and I have discovered a way for me to get
 
 I have also considered changing the way I rank amino acids. At the moment, there is no order in the classification of the amino acids. By setting similar amino acids and their corresponding numbers close to one another, I might be able to improve training. As you need to know for machine learning, bad data in, bad data out.
 
+It takes way too long time to load the data now with more data (around 12 minutes). I need to rewrite the function to improve performance.
+
+I improved performance slightly, reducing one minute.
+
+WOW! I collected everything to one big list and converted to a numpy array instead of appending to numpy array. Now all the data loads in 0.02 seconds (increase by 36 000 times!)
 
 
 
