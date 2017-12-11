@@ -35,6 +35,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         total_file_count += len([x for x in files if not x.startswith('.')])
 
+    print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded""",
+          end='\r')
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd(), topdown=True):  # Walks through all files and dirs
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         for filename in filenames:
