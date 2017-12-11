@@ -6,7 +6,7 @@ import time
 import shutil
 from read_fasta import read_fasta
 
-def reformat(verbose=True):
+def reformat(verbose=True, compress=False):
     """Loads traning data into a numpy array.
     Ignores files that starts with . since they are config files in ubuntu.
     """
@@ -29,22 +29,27 @@ def reformat(verbose=True):
     amount_of_files = len(glob.glob("*.gz"))
     print(f'Loading {amount_of_files} files')
     for file in glob.glob("*.gz"):
+        file_time = time.time()
         file_handle = gzip.open(file, mode="r")
         names, sequences = read_fasta(file_handle.read().decode('utf-8'))
-        found_peptide=False
+        # Opening here is waaay faster
+        outfile = open('reformatted/'+str(os.path.splitext(file)[0])+'_formatted.fasta', 'a', encoding="utf-8")  # Encoding to prevent name errors
         for name, seq in zip(names, sequences):
-            if 'signal peptide' not in name:
+            if 'signal peptide' in name:
                 continue
-            with open('reformatted/'+str(os.path.splitext(file)[0])+'_formatted.fasta', 'a') as outfile:
-                outfile.write(name + '\n')
-                outfile.write(str(seq) + '\n')
+            if compress:
+                name = '>'
+                seq = seq[:40]                
+            outfile.write(name + '\n')
+            outfile.write(str(seq) + '\n')
             sample_counter += 1
         file_counter += 1
-        print(f'{file_counter} out of {amount_of_files} done', end='\r')
+        outfile.close()
+        print(f'{file_counter} out of {amount_of_files} done. {sample_counter} loaded total', end='\r')
     os.chdir(cur_dir)
     if verbose:
         print(f'Loaded {file_counter} files')
         print(f'Loaded {sample_counter} samples')
         print('It took {0:.5f} seconds to load'.format(time.time()-t))
 
-reformat()
+reformat(compress=True)

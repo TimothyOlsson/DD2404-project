@@ -14,7 +14,8 @@ def check_region(region):
         return np.array([0])
 
 def load_training(cutoff, data_folder, resample_method='ALL',
-                  fix_samples='IGNORE', equalize=False, save_array=False):
+                  fix_samples='IGNORE', _equalize_data=False, save_array=False,
+                  use_ascii=True):
     """Loads traning data into a numpy array.
     Ignores files that starts with . since they are config files in ubuntu.
     """
@@ -23,6 +24,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
     X = np.empty((0, cutoff))  # Creates empty 2d matrix, where columns are
     Y = np.empty((0, 1))  # Empty vector
     AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+    AA_dict = {'A': 0, 'R': 1, 'N': 2, 'D': 3, 'C': 4, 'Q': 5, 'E': 6, 'G': 7, 'H': 8, 'I': 9,
+               'L': 10, 'K': 11, 'M': 12, 'F': 13, 'P': 14, 'S': 15, 'T': 16, 'W': 17, 'Y': 18, 'V': 19}
     cur_dir = os.getcwd()  # Needed to reset working directory
     os.chdir(data_folder)  # Go to data folder
     sample_counter = 0  # Just to count amount of data
@@ -95,11 +98,16 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                                if len(x) < cutoff
                                else x for x in regions]
 
-                # Using ascii numbers
-                # ord('A') = 65
-                """Doing this sped up the process by 20 fold!"""
-                for i,j in enumerate(seqs):
-                    seqs[i] = [ord(x) - 65 for x in j]
+                if use_ascii:
+                    # Using ascii numbers, ord('A') = 65
+                    """Doing this sped up the process by 20 fold!"""
+                    for i,j in enumerate(seqs):
+                        seqs[i] = [ord(x) - 65 for x in j]
+                elif not use_ascii:
+                    # Using ascii numbers, ord('A') = 65
+                    """Doing this sped up the process by 20 fold!"""
+                    for i,j in enumerate(seqs):
+                        seqs[i] = [AA_dict[x] for x in j]
 
                 for seq, region in zip(seqs, regions):
                     X = np.vstack((X, np.array(seq)))
@@ -123,7 +131,7 @@ def load_training(cutoff, data_folder, resample_method='ALL',
     #print('Positive values starts at: ' + str(np.argmax(Y)))
 
     t = time.time()
-    if equalize:
+    if _equalize_data:
         amount_positive = np.count_nonzero(Y)
         amount_negative = Y.shape[0] - amount_positive
         removed_samples = 0
@@ -148,7 +156,7 @@ def load_training(cutoff, data_folder, resample_method='ALL',
 
     if save_array:
         print('Saving array to file...')
-        np.savez('loaded_array.npz', X, Y)
+        np.savez('storage/loaded_array.npz', X, Y)
     return X, Y
 
 def load_tar(): # WIP
