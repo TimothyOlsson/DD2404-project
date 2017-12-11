@@ -150,10 +150,6 @@ if not _load_array:
                          _equalize_data=_equalize_data,
                          save_array=_save_array)
 
-#time.sleep(2)  # If you want to see what data has loaded
-X.astype('float64')
-Y.astype('float64')
-
 print('Shuffling data...')
 np.random.seed(1) # fix random seed for reproducing results
 s = np.arange(X.shape[0])
@@ -161,13 +157,22 @@ np.random.shuffle(s)
 X = X[s][:]
 Y = Y[s]
 
+# Reshape, need 3d for CNN
+X = X.reshape(X.shape[0], X.shape[1], 1)
+
+#time.sleep(2)  # If you want to see what data has loaded
+
+# Fix so that you can divide
+X.astype('float64')
+Y.astype('float64')
+
 print('Preprocessing data...')
 # Preprocessing data
-X = X.reshape(X.shape[0], X.shape[1], 1)
+
 if _use_ascii:
-    X /= 90
+    X /= 90.
 elif not _use_ascii:
-    X /= 19
+    X /= 19.
 length_divide = round(X.shape[0]*val_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
