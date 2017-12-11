@@ -1,61 +1,54 @@
-#region ARGPARSE CLI
-import argparse
-parser = argparse.ArgumentParser(description='CNN')
-parser.add_argument('-i', '--input', dest='data_folder', required=False, default='../../data/training_data',
-                    help='')
-parser.add_argument('--load_array', dest='_load_array', required=False, default=True, action='store_true',
-                    help='')
-parser.add_argument('--dont_load_array', dest='_load_array', required=False, default=True, action='store_false',
-                    help='')
-parser.add_argument('--load_model', dest='_load_model', required=False, default=False, action='store_true',
-                    help='')
-parser.add_argument('--train_load_model', dest='_train_load_model', required=False, default=False, action='store_true',
-                    help='')
-parser.add_argument('--use_gpu', dest='use_gpu', required=False, default=False, action='store_true',
-                    help='')
-parser.add_argument('--use_ascii', dest='use_ascii', required=False, default=False, action='store_true',
-                    help='')
-args = parser.parse_args()
-
-"""CONSIDER USING A CONFIG FILE INSTEAD OF ARG PARSER (or us a combination??)"""
-
-#endregion
-
 #region PARAMETERS
+########################################################################################################################
+# GPU
+_use_gpu = True
 
-print(args)
-use_gpu = args.use_gpu
-_load_model = args._load_model
-_load_array = args._load_array
-_train_load_model = args._train_load_model
-data_folder = args.data_folder
-use_ascii = args.use_ascii
-
+# DATA
+_load_array = False
+_data_folder = '../../data/training_data'
+_use_ascii = False
+_equalize_data = True
+_save_array = True
 cutoff = 30
 val_split = 0.7
-decay = 1.1e-5  # Good to stop oscillation
-lr = 0.025  # 0.025 seems to be great
+resample_method = 'FIRST'
+fix_samples = 'NOISE'
+
+# MODEL
+_load_model = False
+_train_load_model = False
+
+# HYPERPARAMETERS
+lr = 0.025
+decay = 1.1e-5
+momentum = 0.5
 epochs = 3000
 batch_size = 1000
-momentum = 0.5
-GAN_epochs = 100
-resample_method = 'ALL'
-fix_samples = 'NOISE'
-equalize = True
-_save_array = True
-_plot_performance = True
-_generate_GAN = False
+_use_lr_scheduler = True
+_lr_dict = {0.88: 0.02, 0.90: 0.015, 0.93: 0.005, 0.94: 0.001}
+
+# PLOTTINGS
+_plot_performance = False
+_config_plot_realtime = True
+_plot_realtime_interval = 100
+
+# GAN
+_generate_GAN = True
+GAN_epochs = 1000
 
 
+#region use gpu
 """I need to set CUDA before imports!!!"""
 import os
-if not use_gpu:
+if not _use_gpu:
     """Use gpu if you have many parameters in your model"""
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     print('Using cpu...')
 else:
     print('Using gpu...')
+#endregion
 
+########################################################################################################################
 #endregion
 
 #region  MODULES
@@ -83,13 +76,16 @@ import pandas as pd
 from load_data import load_training
 import tensorflow as tf
 import time
+import matplotlib
+matplotlib.use('TkAgg')  # Needed to change plot position while calculating. NEEDS TO ADDED BEFORE pyplot import
 import matplotlib.pyplot as plt
-import matplotlib.transforms
 import cv2
 from keras.models import load_model
 import pickle
 from sklearn import metrics  # For ROC curve
 from keras import backend as K  # for layer viz
+import pdb
+import multiprocessing
 
 #endregion
 
@@ -100,7 +96,7 @@ from keras import backend as K  # for layer viz
 print('Creating model...')
 model = Sequential()
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
+model.add(GaussianNoise(0.07))  # Maybe try with noise to reduce overfit?
 model.add(MaxPooling1D())
 model.add(Dropout(0.2))
 model.add(UpSampling1D(5))
@@ -140,20 +136,20 @@ Solutions: more data, change hyperparameters, add dropout
 if _load_array:
     try:
         from load_data import load_from_file
-        X,Y = load_from_file('loaded_array.npz')
+        X,Y = load_from_file('storage/loaded_array.npz')
     except:
         print('Cannot load numpy file')
-        _load_array = False
+        _load_array = False  # If it cant find the file, load the data
 
 if not _load_array:
     X, Y = load_training(cutoff,
-                         data_folder,
+                         _data_folder,
                          resample_method=resample_method,
                          fix_samples=fix_samples,
-                         equalize=equalize,
+                         _equalize_data=_equalize_data,
                          save_array=_save_array)
 
-#time.sleep(2)  # I want to see what data has loaded
+#time.sleep(2)  # If you want to see what data has loaded
 X.astype('float64')
 Y.astype('float64')
 
@@ -167,10 +163,10 @@ Y = Y[s]
 print('Preprocessing data...')
 # Preprocessing data
 X = X.reshape(X.shape[0], X.shape[1], 1)
-if use_ascii:
+if _use_ascii:
     X /= 90
-elif not use_ascii:
-    X /= 20
+elif not _use_ascii:
+    X /= 19
 length_divide = round(X.shape[0]*val_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
@@ -185,75 +181,141 @@ print('Train set: {} positive samples and {} negative samples'.format(np.count_n
 print('Test set: {} positive samples and {} negative samples'.format(np.count_nonzero(Y_test),
                                                                     Y_test.shape[0] - np.count_nonzero(Y_test)))
 
-
 #endregion
 
-#region TRAINING MODEL
+#region LOADING AND TRAINING MODEL
 ########################################################################################################################
 
 print('Training model...')
-# Fit the model
-t = time.time()
 
+"""Consider splitting classes into separate files"""
+
+#region History and realtime plotting callback
 # Recording history for ending training early
 class history_recorder(keras.callbacks.Callback):
+
+    def __init__(self):
+        self._config_plot_realtime = False
+
     def on_train_begin(self, logs={}):
         self.history = {}
         self.history['loss'] = []
-        self.history['binary_accuracy'] = []
         self.history['val_loss'] = []
+        self.history['binary_accuracy'] = []
         self.history['val_binary_accuracy'] = []
+        if self._config_plot_realtime:
+            plt.ion()  # interactive mode for real time plotting. Add plt.ioff() when done
+            self.fig, self.ax = plt.subplots(figsize=(10, 5))
+            self.ax_acc = plt.subplot(1, 2, 1)  # Acc
+            self.ax_acc.set_xlim([0, epochs])
+            self.ax_acc.set_ylim([0, 1])
+            self.ax_acc.set_autoscale_on(False)  # fix limits
+            plt.grid('on')
+            plt.title('Real time model accuracy')
+            plt.ylabel('accuracy')
+            plt.xlabel('epoch')
+            self.ax_loss = plt.subplot(1, 2, 2, sharex=self.ax_acc, sharey=self.ax_acc)  # Loss
+            plt.grid('on')
+            plt.title('Real time model loss')
+            plt.ylabel('loss')
+            plt.xlabel('epoch')
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+
+    def on_train_end(self, logs={}):
+        if self._config_plot_realtime:
+            plt.ioff() # Consider adding it if stopped early
+            plt.close('all')
 
     def on_epoch_end(self, epoch, logs={}):
         self.history['loss'].append(logs.get('loss'))
-        self.history['binary_accuracy'].append(logs.get('binary_accuracy'))
         self.history['val_loss'].append(logs.get('val_loss'))
+        self.history['binary_accuracy'].append(logs.get('binary_accuracy'))
         self.history['val_binary_accuracy'].append(logs.get('val_binary_accuracy'))
+        if self._config_plot_realtime:
+            if epoch%_plot_realtime_interval == 0:
+                self.ax_acc.plot(self.history['binary_accuracy'], 'r-')
+                self.ax_acc.plot(self.history['val_binary_accuracy'], 'b-')
+                self.ax_acc.legend(['train', 'test'], loc='upper left')
+                self.ax_acc.set_ylim([0, 1])
+                self.ax_loss.plot(self.history['loss'], 'r-')
+                self.ax_loss.plot(self.history['val_loss'], 'b-')
+                self.ax_loss.legend(['train', 'test'], loc='upper left')
+                self.fig.canvas.draw()
+                plt.pause(0.0000001)
+#endregion
 
+#region Learningrate callback
 # Learning rate scheduler
 class learning_rate_scheduler(keras.callbacks.Callback):
 
-    def on_train_begin(self, logs={}):
-        self.checkpoint1 = True
-        self.checkpoint2 = True
-        self.checkpoint3 = True
-        self.checkpoint4 = True
+    def __init__(self):
+        self._lr_dict = {}
 
     def on_epoch_end(self, epoch, logs={}):
+        if _use_lr_scheduler:
+            indices = [(x, y) for x, y in self._lr_dict.items() if logs.get('val_binary_accuracy') >= x]
+            if indices != []:
+                K.set_value(model.optimizer.lr, indices[0][1]) # lr = y, value
+                print(f'\nChanged learning rate to {indices[0][1]}')
+                del self._lr_dict[indices[0][0]]  # acc = x, key
+#endregion
 
-        if logs.get('val_binary_accuracy')>0.88 and self.checkpoint1:
-            K.set_value(model.optimizer.lr, 0.02)
-            print('\nChanged learning rate to 0.02')
-            self.checkpoint1 = False
-        elif logs.get('val_binary_accuracy')>0.92 and self.checkpoint2:
-            K.set_value(model.optimizer.lr, 0.015)
-            print('\nChanged learning rate to 0.015')
-            self.checkpoint2 = False
-        elif logs.get('val_binary_accuracy') > 0.95 and self.checkpoint3:
-            K.set_value(model.optimizer.lr, 0.01)
-            print('\nChanged learning rate to 0.01')
-            self.checkpoint3 = False
-        elif logs.get('val_binary_accuracy') > 0.96 and self.checkpoint4:
-            K.set_value(model.optimizer.lr, 0.05)
-            print('\nChanged learning rate to 0.05')
-            self.checkpoint4 = False
-
+#region Fixing callbacks
+checkpointer = ModelCheckpoint(filepath='storage/checkpoint.h5', verbose=0, save_best_only=True)
 history_callback = history_recorder()
 learning_rate_callback = learning_rate_scheduler()
-checkpointer = ModelCheckpoint(filepath='checkpoint.h5', verbose=0, save_best_only=True)
+learning_rate_callback._lr_dict = _lr_dict
+history_callback._config_plot_realtime = _config_plot_realtime
+#endregion
 
-
+#region Loading model
+# Try to load model
 if _load_model or _train_load_model:
     try:
         print('Loading model from file...')
-        model = load_model('Signal_peptide_model.h5')  # Looks like you can load model and keep training
-        with open('history.pkl', 'rb') as pickle_file:
+        model = load_model('results/Signal_peptide_model.h5')  # Looks like you can load model and keep training
+        with open('storage/history.pkl', 'rb') as pickle_file:
             history = pickle.load(pickle_file)
     except Exception as e:
         print(e)
         print('Cannot load model')
         _load_model = False
+#endregion
 
+#region Check callback
+# Check if program has crashed beforehand
+if os.path.isfile('storage/checkpoint.h5') and os.path.isfile('storage/history.pkl'):
+    print('Detected an old checkpoint and history file in storage folder. Maybe your training crashed?')
+    print("Don't load checkpoint: 0")
+    print('Load checkpoint and evaluate: 1')
+    print("Load checkpoint and continue training: 2")
+    while True:
+        _choice = input('Choice: ')
+        if _choice == '0':
+            _train_load_model = False
+            _load_model = False
+            os.remove('storage/checkpoint.h5')
+            break
+        elif _choice == '1':
+            _train_load_model = False
+            _load_model = True
+            model = load_model('storage/checkpoint.h5')
+            os.remove('storage/checkpoint.h5')
+            with open('storage/history.pkl', 'rb') as pickle_file:
+                history = pickle.load(pickle_file)
+            break
+        elif _choice == '2':
+            _train_load_model = True
+            model = load_model('storage/checkpoint.h5')
+            os.remove('storage/checkpoint.h5')
+            break
+        else:
+            print('Input not valid. Try again. Ctrl+c to quit')
+#endregion
+
+#region Training
+t = time.time()
 if (_load_model == False) or (_train_load_model == True):
     try:
         print('Press ctrl+c to stop training early')
@@ -269,20 +331,27 @@ if (_load_model == False) or (_train_load_model == True):
         history = history.history
     except KeyboardInterrupt:
         print('\nStopped training...')
-        model = load_model('checkpoint.h5')  # Remove model and check if model exist later!
+        model = load_model('storage/checkpoint.h5')
+        os.remove('storage/checkpoint.h5')  # comment this for debugging
         history = history_callback.history
 
-    with open('history.pkl', 'wb') as pickle_file:
+    with open('storage/history.pkl', 'wb') as pickle_file:
         pickle.dump(history, pickle_file, pickle.HIGHEST_PROTOCOL)
+    if _config_plot_realtime:
+        plt.ioff()
+        plt.close('all')
     print('It took {0:.5f} seconds to train'.format(time.time()-t))
+#endregion
 
+#region Evaluation and saving
 print('Evaluation of model processing...')
 scores = model.evaluate(X_test, Y_test)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
 print('Saving model...')
-model.save('Signal_peptide_model.h5', overwrite=True)
-
+model.save('results/Signal_peptide_model.h5', overwrite=True)
+#endregion
+########################################################################################################################
 #endregion
 
 #region PLOTS
@@ -294,28 +363,38 @@ print('Plotting accuracy...')
 # Plotting training
 plt.figure()
 plt.grid()
-plt.plot(history['binary_accuracy'])
-plt.plot(history['val_binary_accuracy'])
+axes = plt.gca()
+axes.set_ylim([0,1])
+plt.plot(history['binary_accuracy'], 'r-')
+plt.plot(history['val_binary_accuracy'], 'b-')
 plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('train_acc.png')
-plt.show(block=False)
+plt.savefig('results/train_acc.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region Loss
 print('Plotting loss...')
 plt.figure()
 plt.grid()
-plt.plot(history['loss'])
-plt.plot(history['val_loss'])
+axes = plt.gca()
+axes.set_ylim([0,1])
+plt.plot(history['loss'], 'r-')
+plt.plot(history['val_loss'], 'b-')
 plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('train_loss.png')
-plt.show(block=False)
+plt.savefig('results/train_loss.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region Confusion matrix
@@ -340,15 +419,34 @@ plt.axis('off')
 plt.title('Confusion matrix normalized')
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
-heatmap = plt.pcolor(confusion_matrix_normalized, cmap='Blues')  # CAN PLOT WITHOUT NORMALIZATION
+heatmap = plt.pcolor(confusion_matrix_normalized, cmap='Blues')
 cm_labels = [['True positive', 'False negative'], ['False positive', 'True negative']]
 '''THIS THING TOOK LIKE A MILLION YEARS TO FIGURE, DONT CHANGE THE DAMN COORDINATES'''
 for x in range(2):
     for y in range(2):
         plt.text(y + 0.5, 1.5 - x, "{0}\n{1:.4f}".format(cm_labels[x][y], confusion_matrix_normalized[x][y]),
                 ha='center', va='center', fontsize=16)
-plt.savefig('train_cm.png')
-plt.show(block=False)
+plt.savefig('results/train_cm_normalized.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
+
+plt.figure()
+plt.axis('off')
+plt.title('Confusion matrix')
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+heatmap = plt.pcolor(confusion_matrix, cmap='Blues')
+for x in range(2):
+    for y in range(2):
+        plt.text(y + 0.5, 1.5 - x, "{0}\n{1}".format(cm_labels[x][y], confusion_matrix[x][y]),
+                ha='center', va='center', fontsize=16)
+plt.savefig('results/train_cm.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region ROC curve
@@ -380,11 +478,14 @@ plt.text(0.7, 0.2, 'AUC score: ' + str(round(auc_score,5)) + '\n' + classifier_g
 plt.title('ROC curve')
 plt.ylabel('False positive rate')
 plt.xlabel('True positive rate')
-plt.plot(fpr, tpr, label='Model')
-plt.plot([0, 1], [0, 1], label='Baseline', linestyle='dashed')
+plt.plot(fpr, tpr, 'b-', label='Model', )
+plt.plot([0, 1], [0, 1], 'r-', label='Baseline', linestyle='dashed')
 legend = plt.legend(loc=4, shadow=True)
-plt.savefig('train_roc.png')
-plt.show(block=False)
+plt.savefig('results/train_roc.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region Metrics
@@ -399,6 +500,7 @@ print(accuracy_score, precision_score, sensitivity_score, specificity_score) # L
 #endregions
 
 #region Parameters
+"""
 print('Showing used parameters')
 plt.figure()
 plt.axis('off')
@@ -410,10 +512,14 @@ table = plt.table(cellText=[[x] for x in vars(args).values()], # Log this shit t
 table.auto_set_font_size(False)
 table.set_fontsize(11)
 table.scale(2., 2.)
-plt.savefig('train_param.png')
-plt.show(block=False)
+plt.savefig('results/train_param.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
+"""
 #endregion
-
+########################################################################################################################
 #endregion
 
 #region VISUALIZE MODEL
@@ -426,13 +532,16 @@ plt.show(block=False)
 from keras.utils import plot_model
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
-plot_model(model, to_file='model.png')
+plot_model(model, to_file='results/model.png')
 plt.figure()
-img=plt.imread('model.png')
+img=plt.imread('results/model.png')
 imgplot = plt.imshow(img)
 plt.tight_layout()
 plt.axis('off')
-plt.show(block=False)
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region Filters
@@ -442,7 +551,11 @@ W_1 = np.transpose(W_1) # 20, 254 --> 254, 20
 plt.figure()
 heatmap = plt.imshow(W_1, cmap='bwr') # need to do list in list if 1d dim
 plt.colorbar(heatmap, orientation='vertical')
-plt.show(block=False)
+plt.savefig('results/train_filters.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
 #endregion
 
 #region Connections
@@ -504,21 +617,35 @@ nx.draw(G,
 #nx.draw_circular(G)
 #nx.draw_spectral(G)
 #nx.draw_shell(G)
-plt.show(block=False)
+plt.savefig('results/train_network.png')
+if _plot_performance:
+    plt.show(block=False)
+else:
+    plt.clf()
+
+########################################################################################################################
 #endregion
 
+########################################################################################################################
 #endregion
 
-plt.show()
 if _generate_GAN:
     #region GAN
     ########################################################################################################################
 
+    #region Creating generator
     print('Creating generator...')
     generator = Sequential()
-    generator.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))  # Remember: output = kernel - input
-    generator.add(Convolution1D(254, 11, input_shape=(cutoff, 1), activation='relu'))
+    # Remember: output = kernel - input + 1
+    generator.add(Convolution1D(128, 20, input_shape=(cutoff, 1), activation='sigmoid'))
+    generator.add(MaxPooling1D())
+    generator.add(Convolution1D(128, 5, activation='sigmoid'))
+    generator.add(Convolution1D(254, 1, activation='sigmoid'))
     generator.add(Flatten())
+    generator.add(BatchNormalization())  # This made it pretty good!
+    generator.add(Dense(10, activation='sigmoid'))
+    generator.add(Dense(300, activation='sigmoid'))
+    generator.add(Dense(30, activation='sigmoid'))
     generator.add(Dense(30, activation='sigmoid'))
     generator.add(Reshape((30,1), input_shape=(30,)))
     # Input discriminator = (None, 30, 1), need to add dimension
@@ -527,83 +654,100 @@ if _generate_GAN:
     print(generator.summary())
     print('Input shape: ' + str(generator.input_shape))
     print('Output shape: ' + str(generator.output_shape))
+    #endregion
 
+    #region Creating discriminator
     print('Creating discriminator...')  # USE SAME AS PREDICTOR, CHANGE WHEN YOU CHANGE MODEL
     discriminator = Sequential()
     discriminator.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
+    discriminator.add(GaussianNoise(0.05))  # Maybe try with noise to reduce overfit?
     discriminator.add(MaxPooling1D())
-    discriminator.add(Dropout(0.2))
-    discriminator.add(UpSampling1D(5))
-    discriminator.add(Convolution1D(128, 25, activation='relu'))
-    discriminator.add(Dropout(0.2))
+    discriminator.add(Dropout(0.4))
     discriminator.add(Flatten())
     discriminator.add(Dense(10, activation='relu'))
     discriminator.add(Dense(5, activation='sigmoid'))
     discriminator.add(Dense(1, activation='sigmoid'))
+    print(discriminator.summary())
+    print('Input shape: ' + str(discriminator.input_shape))
+    print('Output shape: ' + str(discriminator.output_shape))
+    # endregion
 
+    #region Compiling models
     print('Compiling models...')  # REMEMBER, CHANGE SO THAT THEY HAVE DIFFERENT LR
-    sgd = keras.optimizers.SGD(lr=0.03, momentum=momentum, nesterov=True)  # Optimal = 0.03
+    sgd = keras.optimizers.SGD(lr=0.01, momentum=momentum, nesterov=True)  # Optimal = 0.03
     discriminator.compile(metrics=['binary_accuracy'],
                         loss='binary_crossentropy',
                         optimizer=sgd)
-    sgd = keras.optimizers.SGD(lr=0.4, momentum=momentum, nesterov=True)
+    sgd = keras.optimizers.SGD(lr=0.25, momentum=0.5, nesterov=True)  # Too high lr --> output stuck on zero, no improvement
     generator.compile(metrics=['binary_accuracy'],
                         loss='binary_crossentropy',
                         optimizer=sgd)
     print("Setting up GAN (generator + discriminator)")
     GAN = Sequential()
     GAN.add(generator)
+    #discriminator = load_model('results/Signal_peptide_model.h5')  # Test
     discriminator.trainable=False
     GAN.add(discriminator)
-    sgd = keras.optimizers.SGD(lr=0.4, momentum=momentum, nesterov=True)
     GAN.compile(loss='binary_crossentropy',
                 optimizer=sgd,
                 metrics=['binary_accuracy'])
     print(GAN.summary())
     print('Input shape: ' + str(GAN.input_shape))
     print('Output shape: ' + str(GAN.output_shape))
+    #endregion
 
+    #region Fixing data
     print('Fixing real data...')
     negative_indices = np.where(Y == Y.argmin())
     X_positive = np.delete(X, list(negative_indices), axis=0)
     Y_positive = np.delete(Y, list(negative_indices), axis=0)
-
+    false_labels = np.zeros((Y_positive.shape[0], 1))  # Y data (0 = false, 1 = true), for discriminator
+    true_labels = np.ones((Y_positive.shape[0], 1))  # Y data (1 = true), for generator
+    random_data = np.random.random((Y_positive.shape[0], 30, 1))  # Generate data for generator
+    #random_data = np.ones((Y_positive.shape[0], 30, 1))  # Y data (1 = true), for generator
+    predictions = generator.predict(random_data)  # Generator tries to create data
     from query import predict_to_AAseq, predict_to_numbers
+    #endregion
 
+    #region Training GAN
     for i in range(GAN_epochs):
         print(f'{i} out of {GAN_epochs} completed')
         print('Generating data...')
-        random_data = np.random.random((Y_positive.shape[0], 30, 1))  # Generate data for generator
-        false_labels = np.zeros((Y_positive.shape[0], 1))  # Y data (0 = false, 1 = true), for discriminator
-        true_labels = np.ones((Y_positive.shape[0], 1))  # Y data (1 = true), for generator
-        predictions = generator.predict(random_data)  # Generator tries to create data
+
 
         print('Training generator to trick discriminator...')
         discriminator.trainable = False
-        GAN.fit(random_data,
-                true_labels,
-                batch_size=1000,
-                epochs=10) # I need to train the generator more, since it is weaker built than discriminator
-
-        print('Training discriminator with real data...')
-        discriminator.trainable = True
-        discriminator.fit(X_positive,
-                          Y_positive,
+        history = GAN.fit(random_data,
+                          true_labels,
                           batch_size=1000,
-                          epochs=1)
-        print('Training discriminator with generated data...')
-        discriminator.fit(predictions,
-                          false_labels,
-                          batch_size=1000,
-                          epochs=1)
+                          epochs=15) # I need to train the generator more, since it is weaker built than discriminator
 
-        predictions_seq = predict_to_AAseq(predictions, use_ascii)
+        if history.history['binary_accuracy'][-1]<0.9:
+            _train_disc = False
+        else:
+            _train_disc = True
+
+        if _train_disc:
+            print('Training discriminator with real data...')
+            discriminator.trainable = True
+            discriminator.fit(X_positive,
+                              Y_positive,
+                              batch_size=1000,
+                              epochs=1)
+            print('Training discriminator with generated data...')
+            discriminator.fit(predictions,
+                              false_labels,
+                              batch_size=1000,
+                              epochs=1)
+
+        predictions_seq = predict_to_AAseq(predictions, _use_ascii)
         print('Generated sequence: ' + ''.join(next(predictions_seq))) # predictions_seq = generator object
-        predictions_numbers = predict_to_numbers(predictions, use_ascii)
+        predictions_numbers = predict_to_numbers(predictions, _use_ascii)
         print('Corresponding to: ' + ','.join(next(predictions_numbers)))
+    #endregion
 
     print('Saving generator...')
-    model.save('Signal_peptide_generator.h5', overwrite=True)
+    model.save('storage/Signal_peptide_generator.h5', overwrite=True)
 
     plt.show()
 
