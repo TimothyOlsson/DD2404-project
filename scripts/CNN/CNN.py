@@ -19,21 +19,21 @@ _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.025
+lr = 0.3
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
 batch_size = 1000
 _use_lr_scheduler = True
-_lr_dict = {0.88: 0.02, 0.90: 0.015, 0.93: 0.005, 0.94: 0.001}
+_lr_dict = {0.88: 0.2, 0.90: 0.1, 0.93: 0.005, 0.94: 0.001}
 
 # PLOTTINGS
-_plot_performance = False
+_plot_performance = True
 _config_plot_realtime = True
 _plot_realtime_interval = 100
 
 # GAN
-_generate_GAN = True
+_generate_GAN = False
 GAN_epochs = 1000
 
 
@@ -73,11 +73,11 @@ from keras.layers import Permute  # Kinda like: I want this shape :)
 from keras.callbacks import History, EarlyStopping, ModelCheckpoint
 import numpy as np
 import pandas as pd
-from load_data import load_training
 import tensorflow as tf
 import time
 import matplotlib
-matplotlib.use('TkAgg')  # Needed to change plot position while calculating. NEEDS TO ADDED BEFORE pyplot import
+# Needed to change plot position while calculating. NEEDS TO ADDED BEFORE pyplot import
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import cv2
 from keras.models import load_model
@@ -142,6 +142,7 @@ if _load_array:
         _load_array = False  # If it cant find the file, load the data
 
 if not _load_array:
+    from load_data import load_training
     X, Y = load_training(cutoff,
                          _data_folder,
                          resample_method=resample_method,
@@ -262,7 +263,10 @@ class learning_rate_scheduler(keras.callbacks.Callback):
 #endregion
 
 #region Fixing callbacks
-checkpointer = ModelCheckpoint(filepath='storage/checkpoint.h5', verbose=0, save_best_only=True)
+# RUNNING IN ONEDRIVE OR DROPBOX SEEMS TO INDUCE PERMISSION DENIED SINCE IT WRITES SO FAST
+checkpointer = ModelCheckpoint(filepath=os.getcwd() +'/' + 'storage/checkpoint.h5',  # I need full path, or permission error
+                               verbose=0,
+                               save_best_only=True)
 history_callback = history_recorder()
 learning_rate_callback = learning_rate_scheduler()
 learning_rate_callback._lr_dict = _lr_dict
