@@ -26,8 +26,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
     """
     print('Loading data...')
     t = time.time()
-    X = np.empty((0, cutoff))  # Creates empty 2d matrix, where columns are
-    Y = np.empty((0, 1))  # Empty vector
+    #X = np.empty((0, cutoff))  # Creates empty 2d matrix, where columns are
+    #Y = np.empty((0, 1))  # Empty vector
     AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
     AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
                'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19}
@@ -41,6 +41,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
         total_file_count += len([x for x in files if not x.startswith('.')])
 
     progress(file_counter, total_file_count, sample_counter)
+    big_seq_list = []  # FASTER
+    big_label_list = []  # FASTER
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd(), topdown=True):  # Walks through all files and dirs
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         for filename in filenames:
@@ -51,28 +53,12 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                 record = str(record.seq)
                 record = record.split('#')
                 full_seq = list(record[0])
-                try:
-                    full_region = list(record[1])
-                except IndexError:
-                    if 'positive' in dirpath:
-                        """No region, assume the first bases are signal peptide"""
-                        full_region = ['h']*cutoff + ['-']*(cutoff-len(full_seq))
-                        if len(full_region) > len(full_seq):
-                            full_region = full_region[:len(full_seq)]
-                    else:
-                        full_region = ['-']*cutoff + ['-']*(cutoff-len(full_seq))
-                        if len(full_region) > len(full_seq):
-                            full_region = full_region[:len(full_seq)]
-
-                # Divide into smaller pieces
-                seqs = [full_seq[x:x + cutoff] for x in range(0, len(full_seq), cutoff)]
-                regions = [full_region[x:x + cutoff] for x in range(0, len(full_region), cutoff)]
 
                 if resample_method == 'FIRST':
-                    seqs = [seqs[0]]
-                    regions = [regions[0]]
+                    seqs = [full_seq[:cutoff]]
                 elif resample_method == 'ALL':
-                    pass
+                    # Divide into smaller pieces
+                    seqs = [full_seq[x:x + cutoff] for x in range(0, len(full_seq), cutoff)]
                 else:
                     print('No resample method has been choosen')
                     quit()
@@ -81,28 +67,17 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                     seqs = [list(x) + (full_seq*(math.ceil(cutoff/(len(full_seq)))))[:cutoff-len(x)]
                             if len(x) < cutoff
                             else x for x in seqs]
-                    regions = [list(x) + (full_region*(math.ceil(cutoff/(len(full_region)))))[:cutoff-len(x)]
-                               if len(x)<cutoff
-                               else x for x in regions]
                 elif fix_samples == 'ZERO':
                     seqs = [list(x) + [0]*(cutoff-len(x))
                             if len(x) < cutoff
                             else x for x in seqs]
-                    regions = [list(x) + [0]*(cutoff-len(x))
-                               if len(x) < cutoff
-                               else x for x in regions]
                 elif fix_samples == 'IGNORE':
                     seqs = [x for x in seqs
                             if len(x) == cutoff]
-                    regions = [x for x in regions
-                               if len(x) == cutoff]
                 elif fix_samples == 'NOISE':
                     seqs = [x + random.choices(AA_list, k=(cutoff-len(x)))
                             if len(x) < cutoff
                             else x for x in seqs]
-                    regions = [x + ['-']*(cutoff-len(x))
-                               if len(x) < cutoff
-                               else x for x in regions]
 
                 if use_ascii:
                     # Using ascii numbers, ord('A') = 65
@@ -115,12 +90,20 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                     for i,j in enumerate(seqs):
                         seqs[i] = [AA_dict[x] for x in j]
 
-                for seq, region in zip(seqs, regions):
-                    X = np.vstack((X, np.array(seq)))
-                    Y = np.vstack((Y, check_region(region)))
-                    sample_counter += 1
-                    # Slows performance, but I still like it here
-                    progress(file_counter, total_file_count, sample_counter)
+                if 'positive' in dirpath:
+                    """No region, assume the first bases are signal peptide"""
+                    big_label_list.append([1])
+                elif 'negative' in dirpath:
+                    big_label_list.append([0])
+                else:
+                    # ADD MORE THINGS HERE
+                    print('ERROR, not negative or positive list')
+                    quit()
+
+                big_seq_list.append(seqs)
+                sample_counter += 1
+                # Slows performance, but I still like it here
+                #progress(file_counter, total_file_count, sample_counter)
 
             file_counter += 1
             progress(file_counter, total_file_count, sample_counter)
@@ -130,6 +113,10 @@ def load_training(cutoff, data_folder, resample_method='ALL',
             """For neg or pos"""
             #print(os.path.basename(dirpath))
 
+    # Needs to flatten big_seq_list, since it is now a 3 matrix
+    big_seq_list = [y for x in big_seq_list for y in x]
+    X = np.array(big_seq_list).astype(dtype='float64')
+    Y = np.array(big_label_list)
     os.chdir(cur_dir)
     print('')
     print(f'Loaded {sample_counter} samples')
@@ -163,7 +150,6 @@ def load_training(cutoff, data_folder, resample_method='ALL',
 
     if save_array:
         print('Saving array to file...')
-        os.remove('storage/loaded_array.npz')
         np.savez('storage/loaded_array.npz', X, Y)
     return X, Y
 
