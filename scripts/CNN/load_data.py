@@ -13,8 +13,13 @@ def check_region(region):
     else:
         return np.array([0])
 
+
+def progress(file_counter, total_file_count, sample_counter):
+    print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded.""",
+          end='\r')
+
 def load_training(cutoff, data_folder, resample_method='ALL',
-                  fix_samples='IGNORE', _equalize_data=False, save_array=False,
+                  fix_samples='IGNORE', _equalize_data=False, save_array=True,
                   use_ascii=True):
     """Loads traning data into a numpy array.
     Ignores files that starts with . since they are config files in ubuntu.
@@ -24,8 +29,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
     X = np.empty((0, cutoff))  # Creates empty 2d matrix, where columns are
     Y = np.empty((0, 1))  # Empty vector
     AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
-    AA_dict = {'A': 0, 'R': 1, 'N': 2, 'D': 3, 'C': 4, 'Q': 5, 'E': 6, 'G': 7, 'H': 8, 'I': 9,
-               'L': 10, 'K': 11, 'M': 12, 'F': 13, 'P': 14, 'S': 15, 'T': 16, 'W': 17, 'Y': 18, 'V': 19}
+    AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
+               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19}
     cur_dir = os.getcwd()  # Needed to reset working directory
     os.chdir(data_folder)  # Go to data folder
     sample_counter = 0  # Just to count amount of data
@@ -35,8 +40,7 @@ def load_training(cutoff, data_folder, resample_method='ALL',
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         total_file_count += len([x for x in files if not x.startswith('.')])
 
-    print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded""",
-          end='\r')
+    progress(file_counter, total_file_count, sample_counter)
     for (dirpath, dirnames, filenames) in os.walk(os.getcwd(), topdown=True):  # Walks through all files and dirs
         dirnames[:] = [x for x in dirnames if not x.startswith('.')]
         for filename in filenames:
@@ -115,10 +119,11 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                     X = np.vstack((X, np.array(seq)))
                     Y = np.vstack((Y, check_region(region)))
                     sample_counter += 1
+                    # Slows performance, but I still like it here
+                    progress(file_counter, total_file_count, sample_counter)
 
             file_counter += 1
-            print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded""",
-                  end='\r')
+            progress(file_counter, total_file_count, sample_counter)
 
             """Can be used in future to find which data was tm or not"""
             #print(os.path.basename(dirpath))
@@ -158,6 +163,7 @@ def load_training(cutoff, data_folder, resample_method='ALL',
 
     if save_array:
         print('Saving array to file...')
+        os.remove('storage/loaded_array.npz')
         np.savez('storage/loaded_array.npz', X, Y)
     return X, Y
 
