@@ -9,8 +9,8 @@ def predict_to_AAseq(predictions, use_ascii):
             yield predictions_seq
             
     elif not use_ascii:
-        AA_dict = {'A': 0, 'R': 1, 'N': 2, 'D': 3, 'C': 4, 'Q': 5, 'E': 6, 'G': 7, 'H': 8, 'I': 9,
-                   'L': 10, 'K': 11, 'M': 12, 'F': 13, 'P': 14, 'S': 15, 'T': 16, 'W': 17, 'Y': 18, 'V': 19}
+        AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
+                   'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19}
         AA_dict = {y: x for x, y in AA_dict.items()} # Reverse, so number is AA
         predictions = [np.round(x*19) for x in predictions]
         for i in range(len(predictions)):
@@ -29,8 +29,8 @@ def predict_to_numbers(predictions, use_ascii):
             yield predictions_seq
             
     elif not use_ascii:
-        AA_dict = {'A': 0, 'R': 1, 'N': 2, 'D': 3, 'C': 4, 'Q': 5, 'E': 6, 'G': 7, 'H': 8, 'I': 9,
-                   'L': 10, 'K': 11, 'M': 12, 'F': 13, 'P': 14, 'S': 15, 'T': 16, 'W': 17, 'Y': 18, 'V': 19}
+        AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
+                   'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19}
         AA_dict = {y: x for x, y in AA_dict.items()} # Reverse, so number is AA
         predictions = [np.round(x*19) for x in predictions]
         for i in range(len(predictions)):
