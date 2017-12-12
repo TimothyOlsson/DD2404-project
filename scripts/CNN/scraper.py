@@ -56,7 +56,6 @@ def main_scraper(url):
                   'User-Agent': "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36"}
 
     while True:
-
         # Get page
         print(f'Getting page {pages}...')
         r = requests.get(url,
@@ -84,8 +83,6 @@ def main_scraper(url):
         print(f'{number_of_workers} workers scraping')
         pool = multiprocessing.Pool(number_of_workers)
         pool.map(scraper_worker, fixed_links)
-        pool.close()  # Close when workers are done
-        pool.join()  # Wait for close
 
         print('Getting next page...')
         next_page = re.search(r'''align="center".*?<a class="bblack" href="(.*?)">></a>''', r.text)
@@ -93,8 +90,9 @@ def main_scraper(url):
         url = url_first_part + next_page
         pages += 1  # Count pages
         time.sleep(1.)  # Wait a bit to not overload server
-
-
+        
+    pool.close()  # Close when workers are done
+    pool.join()  # Wait for close
 
 if __name__ == "__main__":  # Needed for multiprocessing
     if not os.path.exists('scraped'):
