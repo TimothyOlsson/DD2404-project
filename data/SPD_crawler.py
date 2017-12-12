@@ -112,5 +112,5 @@ if __name__ == "__main__":  # Needed for multiprocessing
     if not os.path.isdir('scraped'):
         print('Creating scrape folder')
         os.makedirs('scraped')
-    main_scraper('http://www.signalpeptide.de/index.php?sess=&m=listspdb_mammalia&start=13044&orderby=accession&sortdir=asc')
+    main_scraper('http://www.signalpeptide.de/index.php?m=listspdb_bacteria')
     print('Done')
