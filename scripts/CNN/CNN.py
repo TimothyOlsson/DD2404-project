@@ -1,5 +1,7 @@
 #region PARAMETERS
 ########################################################################################################################
+# CONSIDER USING JSON + ARGPARSER
+
 # GPU
 _use_gpu = True
 
@@ -11,26 +13,26 @@ _equalize_data = True
 _save_array = True
 cutoff = 30
 val_split = 0.7
-resample_method = 'FIRST'
-fix_samples = 'NOISE'
+data_augmentation = 'FIRST'
+fix_samples = 'IGNORE'
 
 # MODEL
 _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.3
+lr = 0.07
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
-batch_size = 1000
+batch_size = 512
 _use_lr_scheduler = True
 _lr_dict = {0.88: 0.2, 0.90: 0.1, 0.93: 0.005, 0.94: 0.001}
 
 # PLOTTINGS
 _plot_performance = True
 _config_plot_realtime = True
-_plot_realtime_interval = 100
+_plot_realtime_interval = 30
 
 # GAN
 _generate_GAN = False
@@ -79,6 +81,7 @@ import matplotlib
 # Needed to change plot position while calculating. NEEDS TO ADDED BEFORE pyplot import
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import cv2
 from keras.models import load_model
 import pickle
@@ -96,12 +99,11 @@ import multiprocessing
 print('Creating model...')
 model = Sequential()
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-model.add(GaussianNoise(0.07))  # Maybe try with noise to reduce overfit?
+#model.add(GaussianNoise(0.10))  # Maybe try with noise to reduce overfit?
+model.add(Dropout(0.2))
 model.add(MaxPooling1D())
-model.add(Dropout(0.2))
-model.add(UpSampling1D(5))
-model.add(Convolution1D(128, 25, activation='relu'))
-model.add(Dropout(0.2))
+#model.add(UpSampling1D(5))
+#model.add(Convolution1D(128, 25, activation='relu'))
 model.add(Flatten())
 model.add(Dense(10, activation='relu'))
 model.add(Dense(5, activation='sigmoid'))
@@ -145,7 +147,7 @@ if not _load_array:
     from load_data import load_training
     X, Y = load_training(cutoff,
                          _data_folder,
-                         resample_method=resample_method,
+                         data_augmentation=data_augmentation,
                          fix_samples=fix_samples,
                          _equalize_data=_equalize_data,
                          save_array=_save_array)
@@ -172,7 +174,7 @@ print('Preprocessing data...')
 if _use_ascii:
     X /= 90.
 elif not _use_ascii:
-    X /= 19.
+    X /= 20.
 length_divide = round(X.shape[0]*val_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
@@ -554,12 +556,27 @@ else:
 #endregion
 
 #region Filters
-W_1 = model.layers[0].get_weights()
-W_1 = np.squeeze(W_1[0],axis=1) # 20, 1, 254 --> 20, 254
-W_1 = np.transpose(W_1) # 20, 254 --> 254, 20
+layer_list = []
+for layer in model.layers:  # Get all layers with filters
+    if 'Conv1D' in str(layer) or 'Dense' in str(layer):
+        layer_list.append(layer)
 plt.figure()
-heatmap = plt.imshow(W_1, cmap='bwr') # need to do list in list if 1d dim
-plt.colorbar(heatmap, orientation='vertical')
+for i,j in enumerate(layer_list):
+    plt.subplot(1,len(layer_list),i+1)
+    layer = j.get_weights()[0]
+    print(layer.shape)
+    print(j.get_weights()[1].shape)
+    print(type(layer.shape))
+    if 'Conv1D' in str(j):  # batch, cropped axis, features
+        layer = np.squeeze(layer, axis=1) # 20, 1, 254 --> 20, 254
+        layer = np.transpose(layer) # 20, 254 --> 254, 20
+        plt.title(f'Conv1D_{i}')
+    elif 'Dense' in str(j):
+        plt.title(f'Dense_{i}')
+
+    heatmap = plt.imshow(layer, cmap='bwr') # need to do list in list if 1d dim
+    plt.colorbar(heatmap, orientation='vertical')
+
 plt.savefig('results/train_filters.png')
 if _plot_performance:
     plt.show(block=False)
@@ -631,6 +648,8 @@ if _plot_performance:
     plt.show(block=False)
 else:
     plt.clf()
+
+plt.show()
 
 ########################################################################################################################
 #endregion
