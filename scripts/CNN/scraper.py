@@ -55,6 +55,8 @@ def main_scraper(url):
     user_agent = {'Referer':url,
                   'User-Agent': "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36"}
 
+    pool = multiprocessing.Pool(50) # About 50 links per page --> 50 workers, pool.map will create new if necessary
+    
     while True:
         # Get page
         print(f'Getting page {pages}...')
@@ -81,7 +83,6 @@ def main_scraper(url):
         # Pool multiprocess
         number_of_workers = len(fixed_links)  # About 50 per page --> 50 workers
         print(f'{number_of_workers} workers scraping')
-        pool = multiprocessing.Pool(number_of_workers)
         pool.map(scraper_worker, fixed_links)
 
         print('Getting next page...')
