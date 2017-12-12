@@ -49,6 +49,7 @@ def scraper_worker(arg_list):
 def main_scraper(url):
     pages = 0
     # Note: http://www.signalpeptide.de/index.php?m=listspdb_mammalia, remove /index.php...
+    # Know that rsplit only works in this case, since only one /!! (if multiple /, use regex)
     url_first_part =  url.rsplit('/',1)[0]
 
     # Used to trick website it's a real browser
