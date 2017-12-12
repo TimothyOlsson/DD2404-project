@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import webbrowser
 import time
 
-
 def scraper_worker(arg_list):
     worker_number = arg_list[0]
     url = arg_list[1]
@@ -32,7 +31,7 @@ def scraper_worker(arg_list):
         if '<br>' in i:
             i = i.replace('<br>', '')
         seq += str(i)
-    print(seq)
+    #print(seq)
 
     # Name
     name_scraped = re.search(r'''<td class="highlight">(.*?\d)&nbsp;''', r.text)  # ID always ends with digit
@@ -40,7 +39,7 @@ def scraper_worker(arg_list):
         print(f'ERROR FOR WORKER {worker_number}, name not found')
         return
     name = name_scraped.group(1)
-    print(name)
+    #print(name)
 
     with open(f'scraped/scrape_worker{worker_number}.fasta', 'a', encoding="utf-8") as file: # Encoding to prevent name errors
         file.write(f'>{name}\n')
@@ -49,7 +48,7 @@ def scraper_worker(arg_list):
 def main_scraper(url):
     pages = 0
     # Note: http://www.signalpeptide.de/index.php?m=listspdb_mammalia, remove /index.php...
-    # Know that rsplit only works in this case, since only one /!! (if multiple /, use regex)
+    # Know that rsplit only works in this case, since only one / !! (if multiple /, use regex)
     url_first_part =  url.rsplit('/',1)[0]
 
     # Used to trick website it's a real browser
@@ -84,12 +83,23 @@ def main_scraper(url):
         # Pool multiprocess
         number_of_workers = len(fixed_links)  # About 50 per page --> 50 workers
         print(f'{number_of_workers} workers scraping')
-        pool.map(scraper_worker, fixed_links)
+
+        try:
+            pool.map(scraper_worker, fixed_links)
+        except KeyboardInterrupt:
+            pool.close()
+            pool.join()
+            print('Stopped workers.')
 
         print('Getting next page...')
+        old_page = url
         next_page = re.search(r'''align="center".*?<a class="bblack" href="(.*?)">></a>''', r.text)
         next_page = next_page.group(1)
         url = url_first_part + next_page
+        if url==old_page:
+            print(f"The script has reached the end. The page didn't change: {url}")
+            break
+
         pages += 1  # Count pages
         time.sleep(1.)  # Wait a bit to not overload server
         
@@ -97,8 +107,10 @@ def main_scraper(url):
     pool.join()  # Wait for close
 
 if __name__ == "__main__":  # Needed for multiprocessing
-    if not os.path.exists('scraped'):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+    if not os.path.isdir('scraped'):
         print('Creating scrape folder')
         os.makedirs('scraped')
-    main_scraper('http://www.signalpeptide.de/index.php?m=listspdb_mammalia')
+    main_scraper('http://www.signalpeptide.de/index.php?sess=&m=listspdb_mammalia&start=13044&orderby=accession&sortdir=asc')
     print('Done')
