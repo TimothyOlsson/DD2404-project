@@ -18,7 +18,7 @@ def scraper_worker(arg_list):
     try:
         r.raise_for_status()
     except Exception as e:
-        print('ERROR LOADING REQUEST: ' + str(e))
+        print('ERROR FOR WORKER {worker_number}, request failed: ' + str(e))
         return
 
     # Seq
