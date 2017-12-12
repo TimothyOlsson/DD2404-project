@@ -18,9 +18,9 @@ def progress(file_counter, total_file_count, sample_counter):
     print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded.""",
           end='\r')
 
-def load_training(cutoff, data_folder, resample_method='ALL',
+def load_training(cutoff, data_folder, data_augmentation='ALL',
                   fix_samples='IGNORE', _equalize_data=False, save_array=True,
-                  use_ascii=True):
+                  use_ascii=False):
     """Loads traning data into a numpy array.
     Ignores files that starts with . since they are config files in ubuntu.
     """
@@ -30,7 +30,7 @@ def load_training(cutoff, data_folder, resample_method='ALL',
     #Y = np.empty((0, 1))  # Empty vector
     AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
     AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
-               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19}
+               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19, 'X': 20}
     cur_dir = os.getcwd()  # Needed to reset working directory
     os.chdir(data_folder)  # Go to data folder
     sample_counter = 0  # Just to count amount of data
@@ -53,10 +53,16 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                 record = str(record.seq)
                 record = record.split('#')
                 full_seq = list(record[0])
+                # Discard bad data
+                if len(full_seq) < 2:
+                    continue
 
-                if resample_method == 'FIRST':
+                # The first amino acid is usually M or not in signal peptide. Ignore it
+                full_seq = full_seq[1:]
+
+                if data_augmentation == 'FIRST':
                     seqs = [full_seq[:cutoff]]
-                elif resample_method == 'ALL':
+                elif data_augmentation == 'ALL':
                     # Divide into smaller pieces
                     seqs = [full_seq[x:x + cutoff] for x in range(0, len(full_seq), cutoff)]
                 else:
@@ -74,6 +80,8 @@ def load_training(cutoff, data_folder, resample_method='ALL',
                 elif fix_samples == 'IGNORE':
                     seqs = [x for x in seqs
                             if len(x) == cutoff]
+                    if seqs == []: # Check for empty lists
+                        continue
                 elif fix_samples == 'NOISE':
                     seqs = [x + random.choices(AA_list, k=(cutoff-len(x)))
                             if len(x) < cutoff
@@ -92,12 +100,18 @@ def load_training(cutoff, data_folder, resample_method='ALL',
 
                 if 'positive' in dirpath:
                     """No region, assume the first bases are signal peptide"""
-                    big_label_list.append([1])
+                    for i in range(len(seqs)):
+                        if i == 0:
+                            big_label_list.append([1])
+                        else:  # When doing data augmentation, this is needed
+                            big_label_list.append([0])
                 elif 'negative' in dirpath:
-                    big_label_list.append([0])
+                    for i in range(len(seqs)):
+                        big_label_list.append([0])
                 else:
                     # ADD MORE THINGS HERE
                     print('ERROR, not negative or positive list')
+                    print(dirpath)
                     quit()
 
                 big_seq_list.append(seqs)
