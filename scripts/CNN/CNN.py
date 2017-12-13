@@ -21,13 +21,13 @@ _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.07
+lr = 0.01
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
-batch_size = 512
+batch_size = 32
 _use_lr_scheduler = True
-_lr_dict = {0.88: 0.2, 0.90: 0.1, 0.93: 0.005, 0.94: 0.001}
+_lr_dict = {0.88: 0.003}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
 
 # PLOTTINGS
 _plot_performance = True
@@ -100,10 +100,10 @@ print('Creating model...')
 model = Sequential()
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
 #model.add(GaussianNoise(0.10))  # Maybe try with noise to reduce overfit?
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 model.add(MaxPooling1D())
-#model.add(UpSampling1D(5))
-#model.add(Convolution1D(128, 25, activation='relu'))
+model.add(UpSampling1D(5))
+model.add(Convolution1D(128, 25, activation='relu'))
 model.add(Flatten())
 model.add(Dense(10, activation='relu'))
 model.add(Dense(5, activation='sigmoid'))
@@ -575,7 +575,7 @@ for i,j in enumerate(layer_list):
         plt.title(f'Dense_{i}')
 
     heatmap = plt.imshow(layer, cmap='bwr') # need to do list in list if 1d dim
-    plt.colorbar(heatmap, orientation='vertical')
+    #plt.colorbar(heatmap, orientation='vertical')
 
 plt.savefig('results/train_filters.png')
 if _plot_performance:
@@ -630,6 +630,7 @@ for i in range(1,len(layers)-1): # Edges
             G.add_edge(node_name1, node_name2)
 """
 
+"""
 plt.figure()
 #pos = nx.get_node_attributes(G,'pos')  # if pos added in each node
 nx.draw(G,
@@ -648,6 +649,7 @@ if _plot_performance:
     plt.show(block=False)
 else:
     plt.clf()
+"""
 
 plt.show()
 
