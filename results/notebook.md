@@ -223,6 +223,11 @@ I improved performance slightly, reducing one minute.
 WOW! I collected everything to one big list and converted to a numpy array instead of appending to numpy array. Now all the data loads in 0.02 seconds (increase by 36 000 times!)
 
 
+### 2017-12-12
+A bunch of things have been completed:
+
+Found an error when loading the data that resulted in lower performance. The script loaded empty sequences (very noisy) and could not handle X as an amino acid.
+It resulted in a really bad performance for the network.
 
 
 
