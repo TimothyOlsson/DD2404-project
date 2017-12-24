@@ -13,21 +13,21 @@ _equalize_data = True
 _save_array = True
 cutoff = 30
 val_split = 0.7
-data_augmentation = 'FIRST'
-fix_samples = 'IGNORE'
+data_augmentation = 'ALL'
+fix_samples = 'NOISE'
 
 # MODEL
 _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.01
+lr = 0.09  # More parameters --> change lr
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
-batch_size = 32
+batch_size = 10000
 _use_lr_scheduler = True
-_lr_dict = {0.88: 0.003}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
+_lr_dict = {0.88: 0.05, 0.92:0.02}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
 
 # PLOTTINGS
 _plot_performance = True
@@ -36,7 +36,10 @@ _plot_realtime_interval = 30
 
 # GAN
 _generate_GAN = False
+_GAN_lr = 0.03
 GAN_epochs = 1000
+
+print(locals())
 
 
 #region use gpu
@@ -73,6 +76,7 @@ from keras.layers import Reshape
 from keras.layers import GaussianNoise
 from keras.layers import Permute  # Kinda like: I want this shape :)
 from keras.callbacks import History, EarlyStopping, ModelCheckpoint
+from keras import regularizers
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -98,15 +102,28 @@ import multiprocessing
 """Discovered: output shape = cutoff-kernel+1"""
 print('Creating model...')
 model = Sequential()
+"""
+# Model 1
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-#model.add(GaussianNoise(0.10))  # Maybe try with noise to reduce overfit?
-model.add(Dropout(0.5))
+model.add(GaussianNoise(0.01))  # Maybe try with noise to reduce overfit?
+#model.add(Dropout(0.2))
 model.add(MaxPooling1D())
-model.add(UpSampling1D(5))
-model.add(Convolution1D(128, 25, activation='relu'))
+#model.add(UpSampling1D(5))  # output = 5
+model.add(Convolution1D(128, 5, activation='relu'))
 model.add(Flatten())
-model.add(Dense(10, activation='relu'))
-model.add(Dense(5, activation='sigmoid'))
+model.add(Dense(30, activation='relu'))
+model.add(Dense(10, activation='sigmoid'))
+model.add(Dense(1, activation='sigmoid'))
+"""
+
+# Model 2
+look_back = 1  # number of timesteps to look back
+model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
+model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
+model.add(Dropout(0.2))
+model.add(LSTM(5, input_shape=(cutoff, look_back)))
+model.add(Reshape((5,1)))
+model.add(LSTM(5))
 model.add(Dense(1, activation='sigmoid'))
 
 print('Compiling model...')
@@ -175,6 +192,7 @@ if _use_ascii:
     X /= 90.
 elif not _use_ascii:
     X /= 20.
+
 length_divide = round(X.shape[0]*val_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
@@ -556,26 +574,28 @@ else:
 #endregion
 
 #region Filters
-layer_list = []
-for layer in model.layers:  # Get all layers with filters
-    if 'Conv1D' in str(layer) or 'Dense' in str(layer):
-        layer_list.append(layer)
-plt.figure()
-for i,j in enumerate(layer_list):
-    plt.subplot(1,len(layer_list),i+1)
-    layer = j.get_weights()[0]
+for i,j in enumerate(model.layers):
+    layer = j.get_weights()
+    if layer == []:
+        continue
+    else:
+        layer = layer[0]
+    plt.subplot(1,len(model.layers),i+1)
     print(layer.shape)
     print(j.get_weights()[1].shape)
-    print(type(layer.shape))
     if 'Conv1D' in str(j):  # batch, cropped axis, features
-        layer = np.squeeze(layer, axis=1) # 20, 1, 254 --> 20, 254
-        layer = np.transpose(layer) # 20, 254 --> 254, 20
+        try:
+            layer = np.squeeze(layer, axis=1) # 20, 1, 254 --> 20, 254
+            layer = np.transpose(layer)  # 20, 254 --> 254, 20
+        except:
+            layer = layer[0][:][:]  # if ex 25, 254, 128 --> take first slice
         plt.title(f'Conv1D_{i}')
     elif 'Dense' in str(j):
         plt.title(f'Dense_{i}')
-
+    else:
+        plt.title(f'Other_{i}')
     heatmap = plt.imshow(layer, cmap='bwr') # need to do list in list if 1d dim
-    #plt.colorbar(heatmap, orientation='vertical')
+    plt.colorbar(heatmap, aspect=50, orientation='vertical', fraction=0.046, pad=0.04)
 
 plt.savefig('results/train_filters.png')
 if _plot_performance:
@@ -585,6 +605,7 @@ else:
 #endregion
 
 #region Connections
+'''
 import networkx as nx
 G=nx.Graph()
 labels={}
@@ -618,7 +639,6 @@ for layer_index, layer_contents in enumerate(layers): # Nodes
         node_size.append(80)  # Can be used in the future to add different sizes of nodes based on parameters
 
 
-"""
 for i in range(1,len(layers)-1): # Edges
     print(layers[i].get_weights()[0].shape[1])
     print(layers[i+1].get_weights()[0].shape[1])
@@ -628,9 +648,6 @@ for i in range(1,len(layers)-1): # Edges
             node_name2 = str(i+1) + '_' + str(k)
             print(node_name1, node_name2)
             G.add_edge(node_name1, node_name2)
-"""
-
-"""
 plt.figure()
 #pos = nx.get_node_attributes(G,'pos')  # if pos added in each node
 nx.draw(G,
@@ -649,7 +666,7 @@ if _plot_performance:
     plt.show(block=False)
 else:
     plt.clf()
-"""
+'''
 
 plt.show()
 
@@ -708,7 +725,7 @@ if _generate_GAN:
     discriminator.compile(metrics=['binary_accuracy'],
                         loss='binary_crossentropy',
                         optimizer=sgd)
-    sgd = keras.optimizers.SGD(lr=0.25, momentum=0.5, nesterov=True)  # Too high lr --> output stuck on zero, no improvement
+    sgd = keras.optimizers.SGD(lr=_GAN_lr, momentum=0.5, nesterov=True)  # Too high lr --> output stuck on zero, no improvement
     generator.compile(metrics=['binary_accuracy'],
                         loss='binary_crossentropy',
                         optimizer=sgd)
