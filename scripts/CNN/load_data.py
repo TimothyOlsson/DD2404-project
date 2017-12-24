@@ -30,7 +30,7 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
     #Y = np.empty((0, 1))  # Empty vector
     AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
     AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
-               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19, 'X': 20}
+               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19, 'X': 0}
     cur_dir = os.getcwd()  # Needed to reset working directory
     os.chdir(data_folder)  # Go to data folder
     sample_counter = 0  # Just to count amount of data
@@ -96,7 +96,10 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
                     # Using ascii numbers, ord('A') = 65
                     """Doing this sped up the process by 20 fold!"""
                     for i,j in enumerate(seqs):
-                        seqs[i] = [AA_dict[x] for x in j]
+                        seqs[i] = [AA_dict[x]
+                                   if x in AA_dict.keys()
+                                   else 0  # Fix unknown amino acids
+                                   for x in j]
 
                 if 'positive' in dirpath:
                     """No region, assume the first bases are signal peptide"""
