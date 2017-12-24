@@ -41,8 +41,17 @@ def scraper_worker(arg_list):
     name = name_scraped.group(1)
     #print(name)
 
+    # Length
+    SP_scraped = re.findall(r'''<td class="highlightfixed">(\w*?)</td>''', r.text)
+    if SP_scraped is None:
+        print(f'ERROR FOR WORKER {worker_number}, SP_length not found')
+        return
+    SP = str(SP_scraped)
+    SP.replace('<br>', '') # Remove if long
+    SP_length = len(SP)
+
     with open(f'scraped/scrape_worker{worker_number}.fasta', 'a', encoding="utf-8") as file: # Encoding to prevent name errors
-        file.write(f'>{name}\n')
+        file.write(f'>{name} {SP_length}\n')
         file.write(f'{seq}\n')
 
 def main_scraper(url):
