@@ -229,6 +229,8 @@ A bunch of things have been completed:
 Found an error when loading the data that resulted in lower performance. The script loaded empty sequences (very noisy) and could not handle X as an amino acid.
 It resulted in a really bad performance for the network.
 
+### 2017-12-24
+I have been away for long time. I have combined CNN and LSTM, which seems to give great results. It takes a long time to train, but it can reach 92% accuracy for validation set. Loss for train and test set are decreasing at the same rate, showing that the model does not overfit or underfit!
 
 
 
