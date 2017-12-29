@@ -6,7 +6,7 @@
 _use_gpu = True
 
 # DATA
-_load_array = False
+_load_array = True
 _data_folder = '../../data/training_data'
 _use_ascii = False
 _equalize_data = True
@@ -21,18 +21,18 @@ _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.09  # More parameters --> change lr
+lr = 0.02  # More parameters --> change lr
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
-batch_size = 10000
+batch_size = 524
 _use_lr_scheduler = True
-_lr_dict = {0.88: 0.05, 0.92:0.02}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
+_lr_dict = {}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
 
 # PLOTTINGS
 _plot_performance = True
 _config_plot_realtime = True
-_plot_realtime_interval = 30
+_plot_realtime_interval = 10
 
 # GAN
 _generate_GAN = False
@@ -119,11 +119,11 @@ model.add(Dense(1, activation='sigmoid'))
 # Model 2
 look_back = 1  # number of timesteps to look back
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
+#model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
 model.add(Dropout(0.2))
-model.add(LSTM(5, input_shape=(cutoff, look_back)))
-model.add(Reshape((5,1)))
-model.add(LSTM(5))
+model.add(LSTM(20, input_shape=(cutoff, look_back)))
+model.add(Reshape((20,1)))
+model.add(LSTM(20))
 model.add(Dense(1, activation='sigmoid'))
 
 print('Compiling model...')
