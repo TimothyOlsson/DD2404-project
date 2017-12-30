@@ -232,7 +232,12 @@ It resulted in a really bad performance for the network.
 ### 2017-12-24
 I have been away for long time. I have combined CNN and LSTM, which seems to give great results. It takes a long time to train, but it can reach 92% accuracy for validation set. Loss for train and test set are decreasing at the same rate, showing that the model does not overfit or underfit!
 
+### 2017-12-30
+I have not had time to add entries to the log book, but the commits in github should give you a good understanding what I have done.
 
+I could not get a good accuracy on my data, so I switched to another project (Text Generation, see repo in github), where I learned a lot of how you could structure data. One important methods that I learned was one-hot encoding data, which proved to be extremely useful for LSTM. I added the functionallity and it works flawlessly!
+
+Time is running short and I need to do the last fixes to my models and script. One thing that I need to do is to improve the way you change parameters, to improve user experience. This will be a huge task.
 
 
 
