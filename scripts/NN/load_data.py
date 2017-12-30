@@ -7,30 +7,37 @@ import time
 import random
 import sys
 
+AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+AA_to_int = {'X': 0, 'R': 1, 'H': 2, 'K': 3, 'D': 4, 'E': 5, 'S': 6, 'T': 7, 'N': 8, 'Q': 9, 'C': 10,
+             'G': 11, 'P': 12, 'A': 13, 'V': 14, 'I': 15, 'L': 16, 'M': 17, 'F': 18, 'Y': 19, 'W': 20}
+
 def check_region(region):
     if any(x in region for x in ['c','n','h','C']):
         return np.array([1])
     else:
         return np.array([0])
 
-
 def progress(file_counter, total_file_count, sample_counter):
     print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded.""",
           end='\r')
 
-def load_training(cutoff, data_folder, data_augmentation='ALL',
+def one_hot_endcoding(vector):
+    # Stupid keras....
+    # TO FIGURE OUT THIS BULLSHIT TOOK SO LONG TIME, I FIRST THOUGHT IT WAS NUMPY BUT NOOOO....
+    for i,j in enumerate(vector):
+        _hot = [0]*len(AA_to_int.keys())
+        _hot[AA_to_int[j]] = 1. # Add 1. at correct index
+        vector[i] = _hot
+    return vector
+
+def load_training(cutoff, data_folder, data_augmentation=False,
                   fix_samples='IGNORE', _equalize_data=False, save_array=True,
-                  use_ascii=False):
+                  use_ascii=False, vectorize=True):
     """Loads traning data into a numpy array.
     Ignores files that starts with . since they are config files in ubuntu.
     """
     print('Loading data...')
     t = time.time()
-    #X = np.empty((0, cutoff))  # Creates empty 2d matrix, where columns are
-    #Y = np.empty((0, 1))  # Empty vector
-    AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
-    AA_dict = {'R': 0, 'H': 1, 'K': 2, 'D': 3, 'E': 4, 'S': 5, 'T': 6, 'N': 7, 'Q': 8, 'C': 9,
-               'G': 10, 'P': 11, 'A': 12, 'V': 13, 'I': 14, 'L': 15, 'M': 16, 'F': 17, 'Y': 18, 'W': 19, 'X': 0}
     cur_dir = os.getcwd()  # Needed to reset working directory
     os.chdir(data_folder)  # Go to data folder
     sample_counter = 0  # Just to count amount of data
@@ -60,9 +67,10 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
                 # The first amino acid is usually M or not in signal peptide. Ignore it
                 full_seq = full_seq[1:]
 
-                if data_augmentation == 'FIRST':
+                # seqs = list in list
+                if not data_augmentation:
                     seqs = [full_seq[:cutoff]]
-                elif data_augmentation == 'ALL':
+                elif data_augmentation:
                     # Divide into smaller pieces
                     seqs = [full_seq[x:x + cutoff] for x in range(0, len(full_seq), cutoff)]
                 else:
@@ -87,22 +95,9 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
                             if len(x) < cutoff
                             else x for x in seqs]
 
-                if use_ascii:
-                    # Using ascii numbers, ord('A') = 65
-                    """Doing this sped up the process by 20 fold!"""
-                    for i,j in enumerate(seqs):
-                        seqs[i] = [ord(x) - 65 for x in j]
-                elif not use_ascii:
-                    # Using ascii numbers, ord('A') = 65
-                    """Doing this sped up the process by 20 fold!"""
-                    for i,j in enumerate(seqs):
-                        seqs[i] = [AA_dict[x]
-                                   if x in AA_dict.keys()
-                                   else 0  # Fix unknown amino acids
-                                   for x in j]
-
+                # Fix Y
                 if 'positive' in dirpath:
-                    """No region, assume the first bases are signal peptide"""
+                    """No region, assume the first bases are the signal peptide"""
                     for i in range(len(seqs)):
                         if i == 0:
                             big_label_list.append([1])
@@ -116,6 +111,24 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
                     print('ERROR, not negative or positive list')
                     print(dirpath)
                     quit()
+
+                # Fix X
+                if vectorize:
+                    for i,j in enumerate(seqs):
+                        seqs[i] = one_hot_endcoding(j)
+                elif use_ascii:
+                    # Using ascii numbers, ord('A') = 65
+                    """Doing this sped up the process by 20 fold!"""
+                    for i,j in enumerate(seqs):
+                        seqs[i] = [float(ord(x)) - 65 for x in j]
+                elif not use_ascii:
+                    # Using ascii numbers, ord('A') = 65
+                    """Doing this sped up the process by 20 fold!"""
+                    for i,j in enumerate(seqs):
+                        seqs[i] = [float(AA_to_int[x])
+                                   if x in AA_to_int.keys()
+                                   else 0  # Fix unknown amino acids
+                                   for x in j]
 
                 big_seq_list.append(seqs)
                 sample_counter += 1
@@ -131,16 +144,17 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
             #print(os.path.basename(dirpath))
 
     # Needs to flatten big_seq_list, since it is now a 3 matrix
-    big_seq_list = [y for x in big_seq_list for y in x]
-    X = np.array(big_seq_list).astype(dtype='float64')
-    Y = np.array(big_label_list)
-    os.chdir(cur_dir)
     print('')
     print(f'Loaded {sample_counter} samples')
+    big_seq_list = sum(big_seq_list, [])  # Flattens list, needed since the code needs list in lists for data aug
+    X = np.array(big_seq_list, dtype=np.float32)   # THIS DOES NOT WORK FOR VECTORIZATION, NEEDS MORE PROCESSING
+    Y = np.array(big_label_list, dtype=np.float32)
+    if not vectorize:
+        X = X.reshape(X.shape[0], X.shape[1], 1) # Reshape, need 3d for CNN
+    os.chdir(cur_dir)
     print('{} positive samples and {} negative samples'.format(np.count_nonzero(Y), Y.shape[0]-np.count_nonzero(Y)))
     print('It took {0:.5f} seconds to load'.format(time.time()-t))
     #print('Positive values starts at: ' + str(np.argmax(Y)))
-
     t = time.time()
     if _equalize_data:
         amount_positive = np.count_nonzero(Y)
@@ -156,7 +170,6 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
             amount_to_remove = amount_negative - amount_positive
             indices = np.where(Y == Y.argmin())[0][:amount_to_remove]
             print(f'More negative than positive samples. Removing {amount_to_remove} negative samples')
-
         X = np.delete(X, list(indices), axis=0)
         Y = np.delete(Y, list(indices), axis=0)
         removed_samples=len(indices)
@@ -168,6 +181,7 @@ def load_training(cutoff, data_folder, data_augmentation='ALL',
     if save_array:
         print('Saving array to file...')
         np.savez('storage/loaded_array.npz', X, Y)
+
     return X, Y
 
 def load_tar(): # WIP
