@@ -6,28 +6,29 @@
 _use_gpu = True
 
 # DATA
-_load_array = True
+_load_array = False
 _data_folder = '../../data/training_data'
-_use_ascii = False
 _equalize_data = True
 _save_array = True
 cutoff = 30
 val_split = 0.7
-data_augmentation = 'ALL'
-fix_samples = 'NOISE'
+data_augmentation = False
+fix_samples = 'IGNORE'
+vectorize = True
+_use_ascii = False
 
 # MODEL
 _load_model = False
 _train_load_model = False
 
 # HYPERPARAMETERS
-lr = 0.02  # More parameters --> change lr
+lr = 0.005  # More parameters --> change lr
 decay = 1.1e-5
 momentum = 0.5
 epochs = 3000
-batch_size = 524
+batch_size = 258
 _use_lr_scheduler = True
-_lr_dict = {}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
+_lr_dict = {0.88: 0.002}  # REMEMBER TO CHANGE THIS WHEN CHANGING MODEL AND LR
 
 # PLOTTINGS
 _plot_performance = True
@@ -60,6 +61,11 @@ else:
 ########################################################################################################################
 
 """CONSIDER TO IMPORT WHEN NEEDED AND HAVE OPTIONAL LIBRARIES TO PREVENT BREAKAGE"""
+import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True  # Stops tf allocating all memory
+session = tf.Session(config=config)
+print('Stopped tf of using all memory on gpu (only allocates whats needed)')
 
 print('Importing modules...')
 import keras
@@ -102,8 +108,9 @@ import multiprocessing
 """Discovered: output shape = cutoff-kernel+1"""
 print('Creating model...')
 model = Sequential()
+
 """
-# Model 1
+# Model 1, lr 0.02 is good for this one. Lower lr to 0.01 when getting 0.88 val acc
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
 model.add(GaussianNoise(0.01))  # Maybe try with noise to reduce overfit?
 #model.add(Dropout(0.2))
@@ -116,14 +123,19 @@ model.add(Dense(10, activation='sigmoid'))
 model.add(Dense(1, activation='sigmoid'))
 """
 
-# Model 2
-look_back = 1  # number of timesteps to look back
+"""
+# Model 2, Give the LSTM time, at least 100 epochs before it starts to be good
 model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
 #model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
-model.add(Dropout(0.2))
-model.add(LSTM(20, input_shape=(cutoff, look_back)))
-model.add(Reshape((20,1)))
-model.add(LSTM(20))
+#model.add(Dropout(0.2))
+model.add(LSTM(512, return_sequences=True)) # [samples, time_steps, feautures], input_shape=(cutoff, 1)
+model.add(LSTM(512))
+model.add(Dense(1, activation='sigmoid'))
+"""
+
+# Model 3, needs vectorized data
+model.add(LSTM(512, input_shape=(cutoff, 21), return_sequences=True)) # [samples, time_steps, feautures], input_shape=(cutoff, 1)
+model.add(LSTM(512))
 model.add(Dense(1, activation='sigmoid'))
 
 print('Compiling model...')
@@ -167,28 +179,25 @@ if not _load_array:
                          data_augmentation=data_augmentation,
                          fix_samples=fix_samples,
                          _equalize_data=_equalize_data,
-                         save_array=_save_array)
+                         save_array=_save_array,
+                         vectorize=vectorize)
 
 print('Shuffling data...')
 np.random.seed(1) # fix random seed for reproducing results
+# SHUFFLE, without it, ROC and AUC doesnt work, bad results etc
 s = np.arange(X.shape[0])
 np.random.shuffle(s)
-X = X[s][:]
+X = X[s]
 Y = Y[s]
 
-# Reshape, need 3d for CNN
-X = X.reshape(X.shape[0], X.shape[1], 1)
-
-#time.sleep(2)  # If you want to see what data has loaded
-
-# Fix so that you can divide
-X.astype('float64')
-Y.astype('float64')
-
 print('Preprocessing data...')
-# Preprocessing data
-
-if _use_ascii:
+# Fix so that you can divide
+if not vectorize:
+    X.astype('float64')
+    Y.astype('float64')
+if vectorize:
+    pass
+elif _use_ascii:
     X /= 90.
 elif not _use_ascii:
     X /= 20.
@@ -197,10 +206,11 @@ length_divide = round(X.shape[0]*val_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
 
-X_train.astype('float64')
-X_test.astype('float64')
-Y_train.astype('float64')
-Y_test.astype('float64')
+if not vectorize:
+    X_train.astype('float64')
+    X_test.astype('float64')
+    Y_train.astype('float64')
+    Y_test.astype('float64')
 
 print('Train set: {} positive samples and {} negative samples'.format(np.count_nonzero(Y_train),
                                                                     Y_train.shape[0] - np.count_nonzero(Y_train)))
