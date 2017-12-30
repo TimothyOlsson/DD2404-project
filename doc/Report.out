@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{The structure of a signal peptide}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Methods and models}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Design choices}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{Data set}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.3}{Neural Network structure}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.4}{Related works}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Evaluating model}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Model performance}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Signal peptide detection in transmembrane proteins}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{Signal peptide detection in proteomes}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.4}{Generative model}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{Conclusion}{}% 13
+\BOOKMARK [1][-]{section.5}{Appendix}{}% 14
+\BOOKMARK [2][-]{subsection.5.1}{Training the model}{section.5}% 15
+\BOOKMARK [2][-]{subsection.5.2}{Pitfalls when training a model}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.3}{Generative Model}{section.5}% 17
