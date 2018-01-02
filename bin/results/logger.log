@@ -1,0 +1,34 @@
+2018-01-02 23:14:55,820 - __main__ - INFO - --------------------START OF RUN--------------------
+2018-01-02 23:14:55,821 - __main__ - INFO - {'__name__': '__main__', '__doc__': None, '__package__': None, '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x0000025F8A2BAAC8>, '__spec__': None, '__annotations__': {}, '__builtins__': <module 'builtins' (built-in)>, '__file__': 'NN.py', '__cached__': None, 'use_gpu': True, 'load_saved_array': False, 'data_folder': '../data/training_data', 'equalize_data': True, 'save_array': True, 'cutoff': 30, 'data_augmentation': False, 'fix_samples': 'IGNORE', 'vectorize': True, 'use_ascii': False, 'load_saved_model': False, 'train_loaded_model': False, 'lr': 0.005, 'decay': 1.1e-05, 'momentum': 0.5, 'val_split': 0.7, 'epochs': 3000, 'batch_size': 258, 'use_lr_scheduler': True, 'lr_scheduler_plan': {0.88: 0.002, 0.92: 0.001, 0.94: 0.0007}, 'config_plot_realtime': True, 'plot_realtime_interval': 10, 'plot_performance': False, 'train_GAN': True, 'load_trained_GAN': True, 'GAN_lr': 0.03, 'GAN_epochs': 3000, 'GAN_batch_size': 256, 'argparse': <module 'argparse' from 'F:\\Python\\lib\\argparse.py'>, 'parser': ArgumentParser(prog='NN.py', usage=None, description='Keras based program that predicts Signal Peptides', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), 'args': Namespace(use_gpu=True), 'key': 'use_gpu', 'logging': <module 'logging' from 'F:\\Python\\lib\\logging\\__init__.py'>, 'os': <module 'os' from 'F:\\Python\\lib\\os.py'>, 'logger': <Logger __main__ (INFO)>, 'handler': <FileHandler C:\Users\Timothy''s PC\OneDrive\Dokument\GitHub\DD2404-project\bin\results\logger.log (INFO)>, 'formatter': <logging.Formatter object at 0x0000025F8A4E2F60>}
+2018-01-02 23:14:57,517 - __main__ - INFO - Using gpu...
+2018-01-02 23:14:59,179 - __main__ - INFO - _________________________________________________________________
+2018-01-02 23:14:59,179 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-02 23:14:59,180 - __main__ - INFO - =================================================================
+2018-01-02 23:14:59,180 - __main__ - INFO - lstm_1 (LSTM)                (None, 30, 512)           1093632   
+2018-01-02 23:14:59,180 - __main__ - INFO - _________________________________________________________________
+2018-01-02 23:14:59,180 - __main__ - INFO - lstm_2 (LSTM)                (None, 512)               2099200   
+2018-01-02 23:14:59,180 - __main__ - INFO - _________________________________________________________________
+2018-01-02 23:14:59,181 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 513       
+2018-01-02 23:14:59,181 - __main__ - INFO - =================================================================
+2018-01-02 23:14:59,181 - __main__ - INFO - Total params: 3,193,345
+2018-01-02 23:14:59,181 - __main__ - INFO - Trainable params: 3,193,345
+2018-01-02 23:14:59,181 - __main__ - INFO - Non-trainable params: 0
+2018-01-02 23:14:59,181 - __main__ - INFO - _________________________________________________________________
+2018-01-02 23:14:59,181 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-02 23:14:59,181 - __main__ - INFO - Output shape: (None, 1)
+2018-01-02 23:14:59,433 - scripts.load_data - INFO - Loaded 2649 samples
+2018-01-02 23:14:59,544 - scripts.load_data - INFO - 1320 positive samples and 1329 negative samples
+2018-01-02 23:14:59,545 - scripts.load_data - INFO - It took 0.30381 seconds to load
+2018-01-02 23:14:59,545 - scripts.load_data - INFO - More negative than positive samples. Removing 9 negative samples
+2018-01-02 23:14:59,547 - scripts.load_data - INFO - Equalized, removed 9 samples
+2018-01-02 23:14:59,548 - scripts.load_data - INFO - 1320 positive samples and 1320 negative samples
+2018-01-02 23:14:59,548 - scripts.load_data - INFO - It took 0.00300 seconds to load
+2018-01-02 23:14:59,548 - scripts.load_data - INFO - Saving array to file...
+2018-01-02 23:14:59,601 - __main__ - INFO - Train set: 933 positive samples and 915 negative samples
+2018-01-02 23:14:59,601 - __main__ - INFO - Test set: 387 positive samples and 405 negative samples
+2018-01-02 23:14:59,602 - __main__ - INFO - Detected an old checkpoint and history file in storage folder. Maybe your training crashed?
+2018-01-02 23:14:59,602 - __main__ - INFO - Don't load checkpoint: 0
+2018-01-02 23:14:59,602 - __main__ - INFO - Load checkpoint and evaluate: 1
+2018-01-02 23:14:59,602 - __main__ - INFO - Load checkpoint and continue training: 2
+2018-01-02 23:16:06,710 - __main__ - INFO - 0
+2018-01-02 23:16:06,713 - __main__ - INFO - Press ctrl+c to stop training early
