@@ -1,0 +1,59 @@
+2018-01-08 22:07:55,226 - __main__ - INFO - --------------------START OF RUN--------------------
+2018-01-08 22:07:55,227 - __main__ - INFO - {'__name__': '__main__', '__doc__': None, '__package__': None, '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x0000029ABAE8AAC8>, '__spec__': None, '__annotations__': {}, '__builtins__': <module 'builtins' (built-in)>, '__file__': 'NN.py', '__cached__': None, 'use_gpu': True, 'load_saved_array': False, 'data_folder': '../data/training_data', 'equalize_data': True, 'save_array': True, 'seq_length': 30, 'data_augmentation': False, 'fix_samples': 'ZERO', 'vectorize': True, 'use_ascii': False, 'load_saved_model': False, 'train_loaded_model': False, 'choosen_model': 2, 'train_test_split': 0.8, 'train_val_split': 0.8, 'limit_samples': None, 'lr': 0.0001, 'decay': 1.1e-05, 'momentum': 0.5, 'epochs': 3000, 'batch_size': 4096, 'use_lr_scheduler': True, 'lr_scheduler_plan': {}, 'config_plot_realtime': True, 'plot_realtime_interval': 1, 'plot_performance': True, 'train_GAN': True, 'load_trained_GAN': False, 'GAN_epochs': 3000, 'GAN_batch_size': 512, 'argparse': <module 'argparse' from 'F:\\Python\\lib\\argparse.py'>, 'parser': ArgumentParser(prog='NN.py', usage=None, description='Keras based program that predicts Signal Peptides', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), 'args': Namespace(), 'logging': <module 'logging' from 'F:\\Python\\lib\\logging\\__init__.py'>, 'os': <module 'os' from 'F:\\Python\\lib\\os.py'>, 'logger': <Logger __main__ (INFO)>, 'handler': <FileHandler C:\Users\Timothy''s PC\OneDrive\Dokument\GitHub\DD2404-project\bin\results\logger.log (INFO)>, 'formatter': <logging.Formatter object at 0x0000029ABB0D1E48>}
+2018-01-08 22:08:00,172 - __main__ - INFO - Using gpu...
+2018-01-08 22:08:01,991 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,991 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-08 22:08:01,991 - __main__ - INFO - =================================================================
+2018-01-08 22:08:01,992 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
+2018-01-08 22:08:01,992 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,992 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
+2018-01-08 22:08:01,992 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,992 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
+2018-01-08 22:08:01,992 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,993 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
+2018-01-08 22:08:01,993 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,993 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
+2018-01-08 22:08:01,993 - __main__ - INFO - =================================================================
+2018-01-08 22:08:01,993 - __main__ - INFO - Total params: 142,977
+2018-01-08 22:08:01,993 - __main__ - INFO - Trainable params: 142,977
+2018-01-08 22:08:01,994 - __main__ - INFO - Non-trainable params: 0
+2018-01-08 22:08:01,994 - __main__ - INFO - _________________________________________________________________
+2018-01-08 22:08:01,994 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-08 22:08:01,994 - __main__ - INFO - Output shape: (None, 1)
+2018-01-08 22:09:07,640 - scripts.load_data - INFO - Loaded 1145000 samples
+2018-01-08 22:09:56,388 - scripts.load_data - INFO - Dataset is 2885.4 mb in memory
+2018-01-08 22:09:56,394 - scripts.load_data - INFO - 570577 positive samples and 574423 negative samples
+2018-01-08 22:09:56,395 - scripts.load_data - INFO - It took 114.28372 seconds to load
+2018-01-08 22:09:56,434 - scripts.load_data - INFO - More negative than positive samples. Removing 3846 negative samples
+2018-01-08 22:10:02,525 - scripts.load_data - INFO - Equalized, removed 3846 samples
+2018-01-08 22:10:02,534 - scripts.load_data - INFO - 570577 positive samples and 570577 negative samples
+2018-01-08 22:10:02,536 - scripts.load_data - INFO - It took 6.14184 seconds to equalize
+2018-01-08 22:10:02,536 - scripts.load_data - INFO - Saving array to file...
+2018-01-08 22:10:37,379 - __main__ - INFO - Train set: 364855 positive samples and 365483 negative samples
+2018-01-08 22:10:37,382 - __main__ - INFO - Validation set: 91568 positive samples and 91017 negative samples
+2018-01-08 22:10:37,385 - __main__ - INFO - Test set: 114154 positive samples and 114077 negative samples
+2018-01-08 22:10:37,398 - __main__ - INFO - Detected an old checkpoint and history file in storage folder. Maybe your training crashed?
+2018-01-08 22:10:37,398 - __main__ - INFO - Don't load checkpoint: 0
+2018-01-08 22:10:37,404 - __main__ - INFO - Load checkpoint and evaluate: 1
+2018-01-08 22:10:37,404 - __main__ - INFO - Load checkpoint and continue training: 2
+2018-01-08 22:39:57,791 - __main__ - INFO - 0
+2018-01-08 22:39:57,794 - __main__ - INFO - Press ctrl+c to stop training early
+2018-01-09 10:59:24,955 - __main__ - INFO - 
+Stopped training...
+2018-01-09 10:59:32,680 - __main__ - INFO - It took 44374.88595 seconds to train
+2018-01-09 10:59:32,680 - __main__ - INFO - Evaluation of model processing...
+2018-01-09 11:04:18,779 - __main__ - INFO - 
+binary_accuracy: 94.15%
+2018-01-09 11:04:18,779 - __main__ - INFO - Saving model...
+2018-01-09 11:04:19,155 - __main__ - INFO - Plotting accuracy...
+2018-01-09 11:04:19,513 - __main__ - INFO - Plotting loss...
+2018-01-09 11:04:19,847 - __main__ - INFO - Creating confusion matrix on test samples...
+2018-01-09 11:09:20,733 - __main__ - INFO - Creating ROC curve
+2018-01-09 11:14:23,360 - __main__ - INFO - Calculating metrics
+2018-01-09 11:14:23,360 - __main__ - INFO - Accuracy: 0.9415110129649347, Precision: 0.9280139946840581, Sensitivity: 0.9573208122361021, Specificity: 0.9256905423529721
+2018-01-09 11:14:24,177 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x0000029B82984208> (21, 256)
+2018-01-09 11:14:24,181 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x0000029B82984208> (64, 256)
+2018-01-09 11:14:24,358 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x0000029B829AC198> (128, 256)
+2018-01-09 11:14:24,360 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x0000029B829AC198> (64, 256)
+2018-01-09 11:14:24,429 - __main__ - INFO - Bias of layer <keras.layers.core.Dense object at 0x0000029B830F5F60> (128, 1)
+2018-01-09 11:14:24,430 - __main__ - INFO - Output of layer <keras.layers.core.Dense object at 0x0000029B830F5F60> (1,)
