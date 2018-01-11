@@ -88,11 +88,16 @@ When analyzing an organisms proteome, the SPs can give an indication where in th
 \section{Methods and models}
 
 \subsection{Design choices}
-Design choices, python, keras etc.
+The neural network was written in python with Keras 2.0 and tensorflow 1.4 as the backend. The reason for using keras was that it can be used to quickly prototype and develop neural networks and with the tensorflow backend, a gpu can be used to run the calculations.
 
+\subsection{Data sets}
 
-\subsection{Data set}
-Scraped from websites, extracted etc. POS and NEG, see Table~\ref{tab:datatable}
+A small sample of region-annotated proteins were provided by the course in \verb|fasta| format, containing mostly eukaryotic proteins. The samples also contained information if the proteins were transmembrane proteins or not. The data set contained both positive (contains a SP) and negative samples (does not contain a SP).
+Some samples was extracted from NCBI ftp server, by extracting proteins annotated with signal peptide. Few positive samples and a large set of negative samples were obtained, mostly bacterial proteins.
+Many of the positive samples were scraped from Signal Peptide database. A majority of the samples were bacterial proteins.
+Most samples were extracted from Swissprot protein database. Mostly eukaryotic proteins, both negative and positive.
+
+Proteomes from Homo sapiens, Mus musculus and Escherichia coli were obtained from Swissprot, a database of high-quality manually annotated proteins. 
 
 \begin{table}[H]
 \centering
@@ -112,14 +117,23 @@ Typical signal peptide from dataset:
 \caption{\label{fig:seqlogo}Extracted data from all positive samples}
 \end{figure}
 
-How you handled data, noise, ignore etc for bad samples. Seq files \verb|.fasta| file containing sequences
+\subsection{Data preprocessing}
 
- See Figure~\ref{fig:seqlogo}
+The protein sequences (samples) were contained in \verb|.fasta| files.
+The first 30 amino acids from each sample were taken and sequences that were too short were padded with X.
+First, the samples were cleared from all amino acids that were not one of the 20 standard amino acids. Unknown amino acids were labeled as X.
+Each amino acids were then one-hot encoded (https://en.wikipedia.org/wiki/One-hot) and merged into one 2d array for each sample, creating a 3d array for all the samples.
+Negative samples were labeled as 0 and positive samples were labeled as 1.
+The data was lastly \href{https://en.wikipedia.org/wiki/Oversampling_and_undersampling_in_data_analysis}{undersampled}, making the ratio between negative and positive samples 50/50
 
 \subsection{Neural Network structure}
-LSTM, CNN and dropouts. Reference self to text generator?
+The neural network was based on bidirectional \href{http://colah.github.io/posts/2015-08-Understanding-LSTMs/}{LSTMs}, due to LSTMs effectiveness with sequences and pattern recognition. \cite{rnn_effectiveness}. The bidirectionality of the network was added due to its success in other areas of machine learning with sequences and time-series predictions \cite{bidirectional_1} \cite{bidirectional_2}.
 
-Model picture and maybe summary?
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{pictures/model.png}
+\caption{\label{fig:model_fig}Prediction model}
+\end{figure}
 
 
 \subsection{Related works}
@@ -161,12 +175,35 @@ Is it good enough? Can the model be improved? Can you use other methods (ex HMM,
 %% References
 \bibliographystyle{alpha}
 \begin{thebibliography}{9}
-\bibitem{mrfool} Mrfool {\em Readings compiled for History 21.479.} 1991.
-\bibitem{sp_length} Henrik Nielsen \url{http://www.cbs.dtu.dk/services/SignalP-1.1/sp_lengths.html}
-\bibitem{sp_wiki} Signal peptides wikipedia \url{https://en.wikipedia.org/wiki/Signal_peptide}
-\bibitem{sp_predict1} Henrik Nielsen, {\em Predicting Secretory Proteins with SignalP}, In Kihara, D (ed): Protein Function Prediction (Methods in Molecular Biology vol. 1611),  pp. 59-73, Springer 2017, doi: 10.1007/978-1-4939-7015-5\_6, PMID: 28451972, \url{http://www.cbs.dtu.dk/services/SignalP/}  %CHAR _ makes Latex crash, use \_
-\bibitem{sp_predict2} Karl Frank; Manfred J. Sippl, {\em High Performance Signal Peptide Prediction Based on Sequence Alignment Techniques}, Bioinformatics, 24, pp. 2172-2176 (2008), \url{http://sigpep.services.came.sbg.ac.at/signalblast.html}
-\bibitem{sp_predict3}  Karsten Hiller,  {\em PrediSi}, Institute for Microbiology Technical University of Braunschweig,\url{http://www.predisi.de/}
+
+\bibitem{sp_length} Henrik Nielsen
+\url{http://www.cbs.dtu.dk/services/SignalP-1.1/sp_lengths.html}
+
+\bibitem{sp_wiki} Signal peptides wikipedia
+\url{https://en.wikipedia.org/wiki/Signal_peptide}
+
+\bibitem{rnn_effectiveness} ???
+\url{http://karpathy.github.io/2015/05/21/rnn-effectiveness/}
+
+\bibitem{bidirectional_1} ???
+\url{https://web.stanford.edu/class/cs224n/reports/2760320.pdf}
+
+\bibitem{bidirectional_2} ???
+\url{http://www.cs.cmu.edu/afs/cs/user/zhouyu/www/ASRU.pdf}
+
+\bibitem{sp_predict1} Henrik Nielsen,
+ {\em Predicting Secretory Proteins with SignalP},
+ In Kihara, D (ed): Protein Function Prediction (Methods in Molecular Biology vol. 1611),  pp. 59-73, Springer 2017, doi: 10.1007/978-1-4939-7015-5\_6, PMID: 28451972, 
+\url{http://www.cbs.dtu.dk/services/SignalP/}  %CHAR _ makes Latex crash, use \_
+
+\bibitem{sp_predict2} Karl Frank; Manfred J. Sippl,
+{\em High Performance Signal Peptide Prediction Based on Sequence Alignment Techniques},
+Bioinformatics, 24, pp. 2172-2176 (2008), \url{http://sigpep.services.came.sbg.ac.at/signalblast.html}
+
+\bibitem{sp_predict3}  Karsten Hiller,
+{\em PrediSi}, Institute for Microbiology Technical University of Braunschweig, 
+\url{http://www.predisi.de/}
+
 \end{thebibliography}
 
 %\end{References}
@@ -183,6 +220,10 @@ Gpu is needed to improve training speed. Add epoch time for gpu and cpu
 
 Everything that the person reading don't want to know
 
+
+\subsection{Model details}
+
+??
 
 \subsection{Pitfalls when training a model}
 Concept of under and overfitting and how to prevent it. Example pictures of bad models.
@@ -210,6 +251,22 @@ more stuff
 \includegraphics[width=0.7\textwidth]{pictures/high_lr.png}
 \caption{\label{fig:high_lr}Too high learning rate}
 \end{figure}
+
+
+\subsection{Additional features}
+
+Loading the data can be used in many ways. One way is to augment the data by dividing each sequence into many chunks, taking the chunk closest to the N-terminal as positive and the rest as negative.
+
+Due to the large amount of data obtained, data augmentation were not used.
+
+Advantages with data augmentation: 
+Each positive sample would yield multiple negative samples, so smaller data sets can be used for training.
+Using positive samples and the negative samples from different organisms could make the model overfit to a particular amino acid bias. Using other regions of the positive samples would preserve the amino acid bias, making the data more consistent.
+Some trans-membrane regions of the proteins might be very similar to signal peptide regions, which would force the model to improve the prediction of trans-membrane proteins. 
+
+Disadvantages with data augmentation:
+The first amino acid in the N-terminal has an extremely high bias towards some amino acids, mainly Methionine, see Figure~\ref{fig:seqlogo}. The model would then have a high affinity for the first amino acids, creating a poor model that would only detect if the sequence is located in the N-terminal or not. The first amino acids of each sequence were removed, so the this would not be a problem.
+The N-terminal of peptides both with and without SPs might have a similar structure compared to other regions of protein, which would make the model as stated above, only be able to distinguish if the region is at the N-terminal or not. To prevent this problem, both negative samples from the N-region and other regions of the proteins could be used.
 
 
 \subsection{Generative Model} \label{GAN}
