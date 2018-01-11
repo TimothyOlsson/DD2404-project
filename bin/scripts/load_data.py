@@ -31,8 +31,9 @@ def check_region(region):
         return np.array([0])
 
 def progress(file_counter, total_file_count, sample_counter):
-    print(f"""{file_counter} out of {total_file_count} files loaded, {sample_counter} samples loaded.""",
-          end='\r')
+    s = (f"{file_counter} out of {total_file_count} files loaded, "
+        f"{sample_counter} samples loaded")
+    print(s, end='\r')
 
 def one_hot_endcoding(vector):
     # Stupid keras....
@@ -46,7 +47,7 @@ def one_hot_endcoding(vector):
         vector[i] = _hot
     return vector
 
-def load_training(cutoff, data_folder, data_augmentation=False,
+def load_training(seq_length, data_folder, data_augmentation=False,
                   fix_samples='IGNORE', equalize_data=False, save_array=True,
                   use_ascii=False, vectorize=True):
     """Loads traning data into a numpy array.
@@ -85,30 +86,30 @@ def load_training(cutoff, data_folder, data_augmentation=False,
 
                 # seqs = list in list
                 if not data_augmentation:
-                    seqs = [full_seq[:cutoff]]
+                    seqs = [full_seq[:seq_length]]
                 elif data_augmentation:
                     # Divide into smaller pieces
-                    seqs = [full_seq[x:x + cutoff] for x in range(0, len(full_seq), cutoff)]
+                    seqs = [full_seq[x:x + seq_length] for x in range(0, len(full_seq), seq_length)]
                 else:
                     print('No resample method has been choosen')
                     quit()
 
                 if fix_samples == 'LOOP_SEQ':
-                    seqs = [list(x) + (full_seq*(math.ceil(cutoff/(len(full_seq)))))[:cutoff-len(x)]
-                            if len(x) < cutoff
+                    seqs = [list(x) + (full_seq*(math.ceil(seq_length/(len(full_seq)))))[:seq_length-len(x)]
+                            if len(x) < seq_length
                             else x for x in seqs]
                 elif fix_samples == 'ZERO':
-                    seqs = [list(x) + ['X']*(cutoff-len(x))
-                            if len(x) < cutoff
+                    seqs = [list(x) + ['X']*(seq_length-len(x))
+                            if len(x) < seq_length
                             else x for x in seqs]
                 elif fix_samples == 'IGNORE':
                     seqs = [x for x in seqs
-                            if len(x) == cutoff]
+                            if len(x) == seq_length]
                     if seqs == []: # Check for empty lists
                         continue
                 elif fix_samples == 'NOISE':
-                    seqs = [x + random.choices(AA_list, k=(cutoff-len(x)))
-                            if len(x) < cutoff
+                    seqs = [x + random.choices(AA_list, k=(seq_length-len(x)))
+                            if len(x) < seq_length
                             else x for x in seqs]
 
                 # Fix Y
@@ -116,12 +117,12 @@ def load_training(cutoff, data_folder, data_augmentation=False,
                     """No region, assume the first bases are the signal peptide"""
                     for i in range(len(seqs)):
                         if i == 0:
-                            big_label_list.append([1])
+                            big_label_list.append([1.])
                         else:  # When doing data augmentation, this is needed
-                            big_label_list.append([0])
+                            big_label_list.append([0.])
                 elif 'negative' in dirpath:
                     for i in range(len(seqs)):
-                        big_label_list.append([0])
+                        big_label_list.append([0.])
                 else:
                     # ADD MORE THINGS HERE
                     print('ERROR, not negative or positive list')
@@ -145,9 +146,9 @@ def load_training(cutoff, data_folder, data_augmentation=False,
                                    if x in AA_to_int.keys()
                                    else 0  # Fix unknown amino acids
                                    for x in j]
-
-                big_seq_list.append(seqs)
-                sample_counter += 1
+                for seq in seqs:
+                    big_seq_list.append(seq)  # Needed, since data aug breaks
+                sample_counter += len(seqs)
                 # Slows performance, but I still like it here
                 #progress(file_counter, total_file_count, sample_counter)
 
@@ -172,6 +173,7 @@ def load_training(cutoff, data_folder, data_augmentation=False,
     if not vectorize:
         X = X.reshape(X.shape[0], X.shape[1], 1) # Reshape, need 3d for CNN
     os.chdir(cur_dir)
+    logger.info('Dataset is ' + str(X.nbytes / 1e6) + ' mb in memory')  # X is [samples, time steps, features]
     logger.info('{} positive samples and {} negative samples'.format(np.count_nonzero(Y), Y.shape[0]-np.count_nonzero(Y)))
     logger.info('It took {0:.5f} seconds to load'.format(time.time()-t))
     #print('Positive values starts at: ' + str(np.argmax(Y)))
@@ -184,19 +186,20 @@ def load_training(cutoff, data_folder, data_augmentation=False,
         indices = []
         if amount_positive > amount_negative:
             amount_to_remove = amount_positive - amount_negative
-            indices = np.where(Y == Y.argmax())[0][:amount_to_remove]
+            # Removes random samples, to prevent bias. (it is read in order)
+            indices = random.sample(list(np.nonzero(Y)[0]), amount_to_remove)  # np.where(Y == Y.argmax())[0] DID NOT WORK!!
             logger.info(f'More positive than negative samples. Removing {amount_to_remove} positive samples')
         elif amount_positive <= amount_negative:
             amount_to_remove = amount_negative - amount_positive
-            indices = np.where(Y == Y.argmin())[0][:amount_to_remove]
+            indices = random.sample(list(np.where(Y == 0)[0]), amount_to_remove)
             logger.info(f'More negative than positive samples. Removing {amount_to_remove} negative samples')
         X = np.delete(X, list(indices), axis=0)
         Y = np.delete(Y, list(indices), axis=0)
-        removed_samples=len(indices)
+        removed_samples = len(indices)
         logger.info(f'Equalized, removed {removed_samples} samples')
         logger.info('{} positive samples and {} negative samples'.format(np.count_nonzero(Y),
-                                                                    Y.shape[0] - np.count_nonzero(Y)))
-        logger.info('It took {0:.5f} seconds to load'.format(time.time() - t))
+                                                                         Y.shape[0] - np.count_nonzero(Y)))
+        logger.info('It took {0:.5f} seconds to equalize'.format(time.time() - t))
 
     if save_array:
         logger.info('Saving array to file...')
@@ -268,8 +271,13 @@ def vectorize_to_AAseq(predictions, temperature=0.2):
     for i in range(len(predictions)):  # Note: many vectors
         predictions_seq = predictions[i]
         generated_AA = []
-        predictions_seq = np.round(predictions_seq)
+        print(np.round(predictions_seq[0], 3))
+        #predictions_seq = np.round(predictions_seq)
         for i,j in enumerate(predictions_seq):
+            j = sample(j)  # Randomizes which 1 is taken from the list
+            generated_AA.append(j)
+
+            """
             if not 1. in j:  # If no value = 1
                 generated_AA.append(0)  # 0 = X
             else:
@@ -279,5 +287,7 @@ def vectorize_to_AAseq(predictions, temperature=0.2):
                 else:
                     j = sample(j)  # Randomizes which 1 is taken from the list
                     generated_AA.append(j)
+            """
+
         predictions_seq = [int_to_AA[int(x)] for x in generated_AA]
         yield predictions_seq
