@@ -64,12 +64,13 @@ else:
 
 print('Importing modules...')
 import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, Activation, Flatten, Concatenate, Input
 from keras.layers import LSTM
-from keras.layers import Convolution1D
-from keras.layers import MaxPooling1D
-from keras.layers import UpSampling1D
+from keras.layers import Convolution1D, Convolution2D
+from keras.layers import MaxPooling1D, MaxPooling2D
+from keras.layers import UpSampling1D, UpSampling2D
+from keras.layers import Bidirectional
 from keras.layers import LeakyReLU
 from keras.layers import BatchNormalization
 from keras.layers import Reshape
@@ -93,62 +94,66 @@ import multiprocessing  # For future: make plotting in different processes
 
 #region CREATING MODEL
 
-"""Discovered: output shape = cutoff-kernel+1"""
+"""Discovered: output shape = seq_length-kernel+1"""
 print('Creating model...')
 model = Sequential()
 
-"""
-# Model 1
-'''lr 0.02 is good for this one.
-Lower lr to 0.01 when getting 0.88 val acc
-Very fast learning'''
-model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-model.add(GaussianNoise(0.01))  # Maybe try with noise to reduce overfit?
-#model.add(Dropout(0.2))
-model.add(MaxPooling1D())
-#model.add(UpSampling1D(5))  # output = 5
-model.add(Convolution1D(128, 5, activation='relu'))
-model.add(Flatten())
-model.add(Dense(30, activation='relu'))
-model.add(Dense(10, activation='sigmoid'))
-model.add(Dense(1, activation='sigmoid'))
-"""
+if choosen_model == 0:
+    # Model 0
+    '''lr 0.02 is good for this one.
+    Lower lr to 0.01 when getting 0.88 val acc
+    Very fast learning'''
+    model.add(Convolution1D(254, 20, input_shape=(seq_length, 1), activation='relu'))
+    model.add(GaussianNoise(0.01))  # Maybe try with noise to reduce overfit?
+    #model.add(Dropout(0.2))
+    model.add(MaxPooling1D())
+    #model.add(UpSampling1D(5))  # output = 5
+    model.add(Convolution1D(128, 5, activation='relu'))
+    model.add(Flatten())
+    model.add(Dense(30, activation='relu'))
+    model.add(Dense(10, activation='sigmoid'))
+    model.add(Dense(1, activation='sigmoid'))
+elif choosen_model == 1:
+    # Model 1
+    '''Give the LSTM time, at least 100 epochs before it starts to be good'''
+    model.add(Convolution1D(254, 20, input_shape=(seq_length, 1), activation='relu'))
+    #model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
+    #model.add(Dropout(0.2))
+    model.add(LSTM(512, return_sequences=True)) # [samples, time_steps, feautures], input_shape=(seq_length, 1)
+    model.add(LSTM(512))
+    model.add(Dense(1, activation='sigmoid'))
+elif choosen_model == 2:
+    # Model 2
+    '''Needs vectorized data, pure LSTM.
+    Give it about 100 epochs to improve
+    It seems that dropout is actually not needed here!
+    lr = 0.002
+    lr_scheduler_plan = {0.88: 0.002, 0.92: 0.001, 0.93: 0.0005} '''
+    model.add(Bidirectional(LSTM(64, return_sequences=True), input_shape=(seq_length, 21))) # [samples, time_steps, feautures], input_shape=(seq_length, 1)
+    model.add(Dropout(0.5))
+    model.add(Bidirectional(LSTM(64))) # [samples, time_steps, feautures], input_shape=(seq_length, 1)
+    model.add(Dropout(0.5))
+    model.add(Dense(1, activation='sigmoid'))
+elif choosen_model == 3:
+    # Model 3
+    '''Needs vectorized data combined LSTM and CNN
+    lr = 0.001
+    lr_scheduler_plan = {0.84: 0.0005, 0.88: 0.0002, 0.92: 0.0001, 0.93: 0.00005} '''
+    model.add(Convolution1D(2048, 20, input_shape=(seq_length, 21), activation='relu'))
+    model.add(LSTM(512, return_sequences=True)) # [samples, time_steps, feautures], input_shape=(seq_length, 1)
+    model.add(LSTM(512))
+    model.add(Dense(1, activation='sigmoid'))
+else:
+    pass  # CUSTOM MODEL
 
-"""
-# Model 2
-'''Give the LSTM time, at least 100 epochs before it starts to be good'''
-model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-#model.add(GaussianNoise(0.03))  # Maybe try with noise to reduce overfit?
-#model.add(Dropout(0.2))
-model.add(LSTM(512, return_sequences=True)) # [samples, time_steps, feautures], input_shape=(cutoff, 1)
-model.add(LSTM(512))
-model.add(Dense(1, activation='sigmoid'))
-"""
-
-# Model 3
-'''Needs vectorized data, pure LSTM.
-Give it about 100 epochs to improve
-It seems that dropout is actually not needed here!'''
-model.add(LSTM(512, input_shape=(cutoff, 21), return_sequences=True)) # [samples, time_steps, feautures], input_shape=(cutoff, 1)
-model.add(LSTM(512))
-model.add(Dense(1, activation='sigmoid'))
-
-"""
-# Model 4
-'''Needs vectorized data combined LSTM and CNN
-Not tested yet'''
-model.add(Convolution1D(254, 20, input_shape=(cutoff, 1), activation='relu'))
-model.add(LSTM(512, input_shape=(cutoff, 21), return_sequences=True)) # [samples, time_steps, feautures], input_shape=(cutoff, 1)
-model.add(LSTM(512))
-model.add(Dense(1, activation='sigmoid'))
-"""
 
 print('Compiling model...')
 #Compile model
 sgd = keras.optimizers.SGD(lr=lr, decay=decay, momentum=momentum, nesterov=True)
+adam = keras.optimizers.Adam(lr=lr)
 model.compile(metrics=['binary_accuracy'],
               loss='binary_crossentropy',
-              optimizer=sgd)
+              optimizer=adam)
 
 print('Showing model...')
 model.summary(print_fn=lambda txt: logger.info(txt))
@@ -177,7 +182,7 @@ if load_saved_array:
 
 if not load_saved_array:
     from scripts.load_data import load_training
-    X, Y = load_training(cutoff,
+    X, Y = load_training(seq_length,
                          data_folder,
                          data_augmentation=data_augmentation,
                          fix_samples=fix_samples,
@@ -192,6 +197,11 @@ s = np.arange(X.shape[0])
 np.random.shuffle(s)
 X = X[s]
 Y = Y[s]
+#print(len(np.where(Y==0)[0]))
+#print(len(np.where(Y==1)[0]))
+# Limit samples
+X = X[:limit_samples]
+Y = Y[:limit_samples]
 
 print('Preprocessing data...')
 # Fix so that you can divide
@@ -206,20 +216,22 @@ elif use_ascii:
 elif not use_ascii:
     X /= 20.
 
-length_divide = round(X.shape[0]*val_split)
+# Split train and test set
+length_divide = round(X.shape[0]*train_test_split)
 X_train, X_test = X[:length_divide], X[length_divide:] # X data set
 Y_train, Y_test = Y[:length_divide], Y[length_divide:] # Y data set
 
-if not vectorize:
-    X_train.astype('float64')
-    X_test.astype('float64')
-    Y_train.astype('float64')
-    Y_test.astype('float64')
+# Split train to train and validation
+length_divide = round(X_train.shape[0]*train_val_split)
+X_train, X_val = X_train[:length_divide], X_train[length_divide:] # X data set
+Y_train, Y_val = Y_train[:length_divide], Y_train[length_divide:] # Y data set
 
 logger.info('Train set: {} positive samples and {} negative samples'.format(np.count_nonzero(Y_train),
-                                                                    Y_train.shape[0] - np.count_nonzero(Y_train)))
+                                                                            Y_train.shape[0] - np.count_nonzero(Y_train)))
+logger.info('Validation set: {} positive samples and {} negative samples'.format(np.count_nonzero(Y_val),
+                                                                            Y_val.shape[0] - np.count_nonzero(Y_val)))
 logger.info('Test set: {} positive samples and {} negative samples'.format(np.count_nonzero(Y_test),
-                                                                    Y_test.shape[0] - np.count_nonzero(Y_test)))
+                                                                            Y_test.shape[0] - np.count_nonzero(Y_test)))
 ########################################################################################################################
 #endregion
 
@@ -234,13 +246,17 @@ class history_recorder(keras.callbacks.Callback):
 
     def __init__(self):
         self.config_plot_realtime = False
-
-    def on_train_begin(self, logs={}):
         self.history = {}
+        self.record_initials = True
         self.history['loss'] = []
         self.history['val_loss'] = []
         self.history['binary_accuracy'] = []
         self.history['val_binary_accuracy'] = []
+        self.loss_batch_history = []
+        self.acc_batch_history = []
+        self.lr_history = []
+
+    def on_train_begin(self, logs={}):
         if self.config_plot_realtime:
             plt.ion()  # interactive mode for real time plotting. Add plt.ioff() when done
             self.fig, self.ax = plt.subplots(figsize=(10, 5))
@@ -248,12 +264,18 @@ class history_recorder(keras.callbacks.Callback):
             self.ax_acc.set_xlim([0, epochs])
             self.ax_acc.set_ylim([0, 1])
             self.ax_acc.set_autoscale_on(False)  # fix limits
+            plt.minorticks_on()
             plt.grid('on')
+            plt.grid(b=True, which='major', color='k', linestyle='-', alpha=0.5)
+            plt.grid(b=True, which='minor', color='r', linestyle='-', alpha=0.1)
             plt.title('Real time model accuracy')
             plt.ylabel('accuracy')
             plt.xlabel('epoch')
             self.ax_loss = plt.subplot(1, 2, 2, sharex=self.ax_acc, sharey=self.ax_acc)  # Loss
+            plt.minorticks_on()
             plt.grid('on')
+            plt.grid(b=True, which='major', color='k', linestyle='-', alpha=0.5)
+            plt.grid(b=True, which='minor', color='r', linestyle='-', alpha=0.1)
             plt.title('Real time model loss')
             plt.ylabel('loss')
             plt.xlabel('epoch')
@@ -264,6 +286,16 @@ class history_recorder(keras.callbacks.Callback):
         if self.config_plot_realtime:
             plt.ioff() # Consider adding it if stopped early
             plt.close('all')
+
+    def on_batch_end(self, batch, logs={}):  # This was the only way that I could record initial loss
+        #lr = float(K.get_value(self.model.optimizer.lr))
+        #print(lr)
+        if self.record_initials:
+            self.history['loss'].append(logs.get('loss'))
+            self.history['val_loss'].append(logs.get('loss'))
+            self.history['binary_accuracy'].append(logs.get('binary_accuracy'))  # Assume that val and train are same
+            self.history['val_binary_accuracy'].append(logs.get('binary_accuracy'))
+            self.record_initials = False
 
     def on_epoch_end(self, epoch, logs={}):
         self.history['loss'].append(logs.get('loss'))
@@ -292,7 +324,7 @@ class learning_rate_scheduler(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         if use_lr_scheduler:
-            indices = [(x, y) for x, y in self.lr_scheduler_plan.items() if logs.get('val_binary_accuracy') >= x]
+            indices = [(x, y) for x, y in self.lr_scheduler_plan.items() if logs.get('binary_accuracy') >= x]
             if indices != []:
                 K.set_value(model.optimizer.lr, indices[0][1]) # lr = y, value
                 print(f'\nChanged learning rate to {indices[0][1]}')
@@ -316,8 +348,11 @@ if load_saved_model or train_loaded_model:
     try:
         logger.info('Loading model from file...')
         model = load_model('results/Signal_peptide_model.h5')  # Looks like you can load model and keep training
+        logger.info('Loaded model: ')
+        model.summary(print_fn=lambda txt: logger.info(txt))
         with open('storage/history.pkl', 'rb') as pickle_file:
             history = pickle.load(pickle_file)
+        history_callback.history = history  # OBS: from above
     except Exception as e:
         logger.info(e)
         logger.info('Cannot load model')
@@ -335,8 +370,8 @@ if os.path.isfile('storage/checkpoint.h5') and os.path.isfile('storage/history.p
         _choice = input('Choice: ')
         logger.info(_choice)
         if _choice == '0':
-            train_loaded_model = False
-            load_saved_model = False
+            train_loaded_model = False  # Debug this
+            load_saved_model = False  # Debug this
             os.remove('storage/checkpoint.h5')
             break
         elif _choice == '1':
@@ -351,6 +386,8 @@ if os.path.isfile('storage/checkpoint.h5') and os.path.isfile('storage/history.p
             train_loaded_model = True
             model = load_model('storage/checkpoint.h5')
             os.remove('storage/checkpoint.h5')
+            with open('storage/history.pkl', 'rb') as pickle_file:
+                history_callback.history = pickle.load(pickle_file)
             break
         else:
             print('Input not valid. Try again. Ctrl+c to quit')
@@ -361,16 +398,16 @@ t = time.time()
 if (load_saved_model == False) or (train_loaded_model == True):
     try:
         logger.info('Press ctrl+c to stop training early')
-        history = model.fit(X_train, Y_train,
-                        validation_data=(X_test, Y_test),
-                        epochs=epochs,
-                        batch_size=batch_size,
-                        shuffle=True,
-                        verbose=1,
-                        callbacks=[history_callback,
-                                   checkpointer,
-                                   learning_rate_callback])
-        history = history.history
+        model.fit(X_train, Y_train,
+                  validation_data=(X_val, Y_val),
+                  epochs=epochs,
+                  batch_size=batch_size,
+                  shuffle=True,
+                  verbose=1,
+                  callbacks=[history_callback,
+                             checkpointer,
+                             learning_rate_callback])
+        history = history_callback.history
     except KeyboardInterrupt:
         logger.info('\nStopped training...')
         model = load_model('storage/checkpoint.h5')
@@ -400,10 +437,13 @@ model.save('results/Signal_peptide_model.h5', overwrite=True)
 """ADD PRINTS BEFORE PLOTTING"""
 
 #region Accuracy
-print('Plotting accuracy...')
+logger.info('Plotting accuracy...')
 # Plotting training
 plt.figure()
-plt.grid(which='minor')
+plt.minorticks_on()
+plt.grid('on')
+plt.grid(b=True, which='major', color='k', linestyle='-', alpha=0.5)
+plt.grid(b=True, which='minor', color='r', linestyle='-', alpha=0.1)
 axes = plt.gca()
 axes.set_ylim([0,1])
 plt.plot(history['binary_accuracy'], 'r-')
@@ -420,9 +460,12 @@ else:
 #endregion
 
 #region Loss
-print('Plotting loss...')
+logger.info('Plotting loss...')
 plt.figure()
-plt.grid()
+plt.minorticks_on()
+plt.grid('on')
+plt.grid(b=True, which='major', color='k', linestyle='-', alpha=0.5)
+plt.grid(b=True, which='minor', color='r', linestyle='-', alpha=0.1)
 axes = plt.gca()
 axes.set_ylim([0,1])
 plt.plot(history['loss'], 'r-')
@@ -439,21 +482,31 @@ else:
 #endregion
 
 #region Confusion matrix
-print('Creating confusion matrix on test samples...')
+logger.info('Creating confusion matrix on test samples...')
 predictions = model.predict(X_test)
 predictions = np.round(predictions)
-confusion_matrix = np.array([[0,0],[0,0]])
+
+TP=TN=FP=FN=0
+TN, FP, FN, TP = metrics.confusion_matrix(Y_test, np.round(predictions)).ravel()  # Could rewrite own cm function if I wanted
+"""
 for i in range(Y_test.shape[0]): # All samples
     if predictions[i] == 1 and Y_test[i] == 1: # True positive
-        confusion_matrix[0][0] += 1
+        TP += 1
     elif predictions[i] == 0 and Y_test[i] == 0: # True negative
-        confusion_matrix[1][1] += 1
+        TN += 1
     elif predictions[i] == 1 and Y_test[i] == 0: # False positive
-        confusion_matrix[1][0] += 1
+        FP += 1
     elif predictions[i] == 0 and Y_test[i] == 1: # False negative
-        confusion_matrix[0][1] += 1
+        FN += 1
     else:
         print('ERROR')
+"""
+
+confusion_matrix = np.array([[0, 0], [0, 0]])
+confusion_matrix[0][0] = TP
+confusion_matrix[1][1] = TN
+confusion_matrix[1][0] = FP
+confusion_matrix[0][1] = FN
 confusion_matrix_normalized = confusion_matrix/Y_test.shape[0]  # Total number of samples
 plt.figure()
 plt.axis('off')
@@ -492,14 +545,19 @@ else:
 
 #region ROC curve
 """Maybe write own ROC function to get rid of sklearn dependency? Should not be that hard"""
-print('Creating ROC curve')
+logger.info('Creating ROC curve')
 plt.figure()
 plt.axis('on')
-plt.grid()
+plt.minorticks_on()
+plt.grid('on')
+plt.grid(b=True, which='major', color='k', linestyle='-', alpha=0.5)
+plt.grid(b=True, which='minor', color='r', linestyle='-', alpha=0.1)
 predictions = model.predict(X_test)
 fpr, tpr, thresholds = metrics.roc_curve(Y_test, predictions)
 auc_score = metrics.roc_auc_score(Y_test, predictions)
-if 0.9 < auc_score <= 1.0:
+if 0.95 < auc_score <= 1.0:
+    classifier_grade = 'Excellent (S)'
+elif 0.9 < auc_score <= 0.95:
     classifier_grade = 'very good (A)'
 elif 0.8 < auc_score <= 0.9:
     classifier_grade = 'good (B)'
@@ -530,39 +588,17 @@ else:
 #endregion
 
 #region Metrics
-print('Calculating metrics')
-predictions = model.predict(X_test)
-TN, FP, FN, TP = metrics.confusion_matrix(Y_test, np.round(predictions)).ravel()  # Could rewrite own cm function if I wanted
+logger.info('Calculating metrics')
 accuracy_score = (TN+TP)/(TN+FP+FN+TP) # or use metrics.accuracy_score(Y_test, predictions)
 precision_score = TP/(FP+TP) # or use metrics.precision_score(Y_test, predictions)
 sensitivity_score = TP/(TP+FN) # or use metrics.recall_score(Y_test, predictions)
 specificity_score = TN/(TN+FP)
-logger.info('Accuracy: ' + str(accuracy_score)
-            + ', Precision: ' + str(precision_score)
-            + ', Sensitivity: ' + str(sensitivity_score)
-            + ', Specificity: ' + str(specificity_score)) # Log this shit
+logger.info('Accuracy: ' + str(round(accuracy_score, 4))
+            + ', Precision: ' + str(round(precision_score, 4))
+            + ', Sensitivity: ' + str(round(sensitivity_score, 4))
+            + ', Specificity: ' + str(round(specificity_score, 4))) # Log this shit
 #endregions
 
-#region Parameters
-"""
-print('Showing used parameters')
-plt.figure()
-plt.axis('off')
-table = plt.table(cellText=[[x] for x in vars(args).values()], # Log this shit too
-                 rowLabels=[x for x in vars(args).keys()],
-                 rowLoc='right',
-                 colWidths=[0.2]*len(vars(args).keys()),
-                 loc='center')
-table.auto_set_font_size(False)
-table.set_fontsize(11)
-table.scale(2., 2.)
-plt.savefig('results/train_param.png')
-if plot_performance:
-    plt.show(block=False)
-else:
-    plt.clf()
-"""
-#endregion
 
 ########################################################################################################################
 #endregion
@@ -603,7 +639,7 @@ for i,j in enumerate(model.layers):
             layer = np.squeeze(layer, axis=1) # 20, 1, 254 --> 20, 254
             layer = np.transpose(layer)  # 20, 254 --> 254, 20
         except:
-            layer = layer[0][:][:]  # if ex 25, 254, 128 --> take first slice
+            layer = layer[0]  # if ex 25, 254, 128 --> take first slice
         plt.title(f'Conv1D_{i}')
     elif 'Dense' in str(j):
         plt.title(f'Dense_{i}')
@@ -619,109 +655,43 @@ else:
     plt.clf()
 #endregion
 
-#region Connections
-'''
-import networkx as nx
-G=nx.Graph()
-labels={}
-colors = []
-pos={}
-node_size = []
-layers = []
-
-def color_nodes(node_name, layer):
-    if 'Conv' in str(layer):
-        colors.append('r')
-    elif 'Dense' in str(layer):
-        colors.append('b')
-
-"""Layers have two params: first [0] is the weight, second [1] is the bias"""
-for layer_index, layer_contents in enumerate(model.layers): # Get all layers with weights, ignore rest
-    if layer_contents.get_weights() == []:
-        continue
-    else:
-        layers.append(layer_contents)
-
-# http://www.shogun-toolbox.org/notebook/latest/neuralnets_digits.html inspiration
-for layer_index, layer_contents in enumerate(layers): # Nodes
-    nodes_in_layer = len(layer_contents.get_weights()[1])
-    for node in range(nodes_in_layer):
-        node_name = str(layer_index) + '_' + str(node)  # Node will have the name 00 first etc
-        color_nodes(node_name, layer_contents)
-        G.add_node(node_name)
-        pos[node_name] = (node, len(layers) - layer_index) # I want first layr on top
-        labels[node_name] = round(layer_contents.get_weights()[1][node], 3)  # Bias, only 3 decimals
-        node_size.append(80)  # Can be used in the future to add different sizes of nodes based on parameters
-
-
-for i in range(1,len(layers)-1): # Edges
-    print(layers[i].get_weights()[0].shape[1])
-    print(layers[i+1].get_weights()[0].shape[1])
-    for j in range(layers[i].get_weights()[0].shape[1]):
-        node_name1 = str(i)  + '_' + str(j)
-        for k in range(layers[i+1].get_weights()[0].shape[1]):
-            node_name2 = str(i+1) + '_' + str(k)
-            print(node_name1, node_name2)
-            G.add_edge(node_name1, node_name2)
-plt.figure()
-#pos = nx.get_node_attributes(G,'pos')  # if pos added in each node
-nx.draw(G,
-        labels=labels,
-        font_size=10,
-        pos=pos,
-        node_color=colors,
-        node_size=node_size,
-        with_labels = True)
-#nx.draw_random(G)
-#nx.draw_circular(G)
-#nx.draw_spectral(G)
-#nx.draw_shell(G)
-plt.savefig('results/train_network.png')
-if plot_performance:
-    plt.show(block=False)
-else:
-    plt.clf()
-'''
-
-########################################################################################################################
-#endregion
-
 ########################################################################################################################
 #endregion
 
 if plot_performance:
-    plt.show()
     print('Close plots to continue')
+    plt.show()
 
 if train_GAN:
     #region GAN
     #region Creating generator
-    print('Creating generator...')
-    generator = Sequential()
+    logger.info('Creating generator...')
     # Remember: output = kernel - input + 1
-    generator.add(Convolution1D(2048, 20, input_shape=(30, 1), activation='relu'))
-    generator.add(Convolution1D(2048, 5, activation='relu'))
-    generator.add(Flatten())
-    generator.add(Dense(630, activation='sigmoid')) # Softmax since classification
-    generator.add(Reshape((30,21), input_shape=(630,)))
-    print(generator.summary())
-    print('Input shape: ' + str(generator.input_shape))
-    print('Output shape: ' + str(generator.output_shape))
+    generator = Sequential()
+    generator.add(Convolution1D(128, 20, input_shape=(30, 21)))
+    generator.add(LSTM(64))
+    generator.add(Dense(630, activation='sigmoid'))
+    generator.add(Reshape((30,21)))
+    logger.info(generator.summary(print_fn=lambda txt: logger.info(txt)))
+    logger.info('Input shape: ' + str(generator.input_shape))
+    logger.info('Output shape: ' + str(generator.output_shape))
     #endregion
 
-    print('Creating discriminator...')
+    logger.info('Creating discriminator...')
     discriminator = keras.models.clone_model(model)
+    logger.info(discriminator.summary(print_fn=lambda txt: logger.info(txt)))
+    logger.info('Input shape: ' + str(discriminator.input_shape))
+    logger.info('Output shape: ' + str(discriminator.output_shape))
 
     #region Compiling models
-    print('Compiling models...')  # REMEMBER, CHANGE SO THAT THEY HAVE DIFFERENT LR
-    sgd = keras.optimizers.SGD(lr=0.01, momentum=0.9, nesterov=True)  # Too high lr --> output stuck on zero, no improvement
-    generator.compile(metrics=['binary_accuracy'],
-                        loss='binary_crossentropy',
-                        optimizer=sgd)
-    sgd = keras.optimizers.SGD(lr=0.02, momentum=0.5, nesterov=True)  # Too high lr --> output stuck on zero, no improvement
+    adam = keras.optimizers.Adam(lr=GAN_lr)
+    logger.info('Compiling models...')  # REMEMBER, CHANGE SO THAT THEY HAVE DIFFERENT LR
+    generator.compile(metrics=['accuracy'],
+                        loss='binary_crossentropy',  # USED WRONG LOSS
+                        optimizer=adam)
     discriminator.compile(metrics=['binary_accuracy'],
                           loss='binary_crossentropy',
-                          optimizer=sgd)
+                          optimizer=adam)
 
     if load_trained_GAN:
         try:
@@ -730,38 +700,41 @@ if train_GAN:
         except:
             logger.info('GAN models not found...')
 
-    print("Setting up GAN (generator + discriminator)")
+        logger.info("Setting up GAN (generator + discriminator)")
     GAN = Sequential()
     GAN.add(generator)
     discriminator.trainable=False
     GAN.add(discriminator)
     GAN.compile(loss='binary_crossentropy',
-                optimizer=sgd,
+                optimizer=adam,
                 metrics=['binary_accuracy'])
-    print(GAN.summary())
-    print('Input shape: ' + str(GAN.input_shape))
-    print('Output shape: ' + str(GAN.output_shape))
+    logger.info(GAN.summary(print_fn=lambda txt: logger.info(txt)))
+    logger.info('Input shape: ' + str(GAN.input_shape))
+    logger.info('Output shape: ' + str(GAN.output_shape))
     #endregion
 
     #region Fixing data
-    print('Fixing real data...')
-    negative_indices = np.where(Y == Y.argmin())
+    logger.info('Fixing real data...')
+    negative_indices = list(np.where(Y == 0)[0])  #OBS
     X_positive = np.delete(X, list(negative_indices), axis=0)
     Y_positive = np.delete(Y, list(negative_indices), axis=0)
+    Y_positive = Y_positive[:GAN_limit_samples]
+    X_positive = X_positive[:GAN_limit_samples]
     false_labels = np.zeros((Y_positive.shape[0], 1))  # Y data (0 = false, 1 = true), for discriminator
     true_labels = np.ones((Y_positive.shape[0], 1))  # Y data (1 = true), for generator
-    random_data = np.random.random((Y_positive.shape[0], 30, 1))  # Generate new data for generator
     #endregion
 
     #region Training GAN
     _train_disc = True
+    _train_gen = True
     from scripts.load_data import ascii_to_AAseq, non_ascii_to_AAseq, vectorize_to_AAseq
 
     for i in range(GAN_epochs):
         print(f'{i} out of {GAN_epochs} completed')
-
+        logger.info('-'*10 + f'Iteration {i}' + '-'*10)
         # Shuffle data, this is actually bad for GANS, but I don't care atm
         # random_data = np.ones((Y_positive.shape[0], 30, 1))  # Y data (1 = true), for generator
+        random_data = np.random.random((Y_positive.shape[0], 30, 21))  # Generate new data for generator
         predictions = generator.predict(random_data)  # Start data
         merged_dataX = np.concatenate((X_positive, predictions), axis=0)
         merged_dataY = np.concatenate((Y_positive, false_labels), axis=0)
@@ -771,28 +744,43 @@ if train_GAN:
         merged_dataY = merged_dataY[s]
 
         if _train_disc:
+            # You should acually have only fake or only real in each batch
             print('Training discriminator to distinguish real and generated data...')
             discriminator.trainable = True
-            discriminator.fit(merged_dataX,
-                              merged_dataY,
-                              batch_size=GAN_batch_size,
-                              epochs=5)
-            # Should train with generated and true data seperatly, but whatever
+            history_disc = discriminator.fit(merged_dataX,
+                                             merged_dataY,
+                                             batch_size=GAN_batch_size,
+                                             epochs=5)
+            logger.info('Discriminator loss: ' + str(history_disc.history['loss'][-1]))
 
-        # Use this if you do NOT have a model that uses categorical data (vectorization)
-        print('Training generator to fool discriminator...')  # VERY BAD WITH CATEGORICAL VALUES
-        discriminator.trainable = False
-        history = GAN.fit(random_data,
-                          true_labels,
-                          batch_size=GAN_batch_size,
-                          epochs=10) # I need to train the generator more, since it is weaker built than discriminator
-
-        predictions = generator.predict(random_data)  # Generator tries to create data
-
-        if history.history['binary_accuracy'][-1]<0.9:
+        if _train_gen:
+            print('Training generator to fool discriminator...')
+            discriminator.trainable = False
+            history_gen = GAN.fit(random_data,
+                                  true_labels,
+                                  batch_size=GAN_batch_size,
+                                  epochs=5) # I need to train the generator more, since it is weaker built than discriminator
+            logger.info('Generator loss: ' + str(history_gen.history['loss'][-1]))
+            predictions = generator.predict(random_data)  # Generator tries to create data
+            
+        if history_gen.history['binary_accuracy'][-1]<0.9:
             _train_disc = False
+            _train_gen = True
+        elif history_disc.history['binary_accuracy'][-1]<0.9:
+            _train_disc = True
+            _train_gen = False
         else:
             _train_disc = True
+            _train_gen = True
+
+        """
+        history_gen = generator.fit(random_data,
+                                    X_positive,
+                                    batch_size=GAN_batch_size,
+                                    epochs=5)  # I need to train the generator more, since it is weaker built than discriminator
+        logger.info('Generator loss: ' + str(history_gen.history['loss'][-1]))
+        predictions = generator.predict(random_data)  # Generator tries to create data
+        """
 
         if vectorize:
             predictions_seq = vectorize_to_AAseq(predictions)
@@ -800,19 +788,18 @@ if train_GAN:
             predictions_seq = ascii_to_AAseq(predictions)
         else:
             predictions_seq = non_ascii_to_AAseq(predictions)
-        logger.info('-'*10 + f'Iteration {i}' + '-'*10)
-        logger.info('History loss: ' + str(history.history['loss'][-1]))
+
         #logger.info('First amino acids: ' + str(np.round(predictions[0][0], 4)))
         for i in range(0,10):
             logger.info('Generated sequence: ' + ''.join(next(predictions_seq))) # predictions_seq = generator object
-        scores = model.evaluate(predictions, Y_positive)
-        logger.info(f"Feeding output to model gives: {scores[1] * 100}%, should be close to 100%")
+        #scores = model.evaluate(predictions, Y_positive)
+        #logger.info(f"Feeding output to model gives: {scores[1] * 100}%, should be close to 100%")
         discriminator.save('results/Signal_peptide_discriminator.h5', overwrite=True)
         generator.save('results/Signal_peptide_generator.h5', overwrite=True)
 
     #endregion
 
-    print('Saving generator...')
+        logger.info('Saving generator...')
     discriminator.save('results/Signal_peptide_discriminator.h5', overwrite=True)
     generator.save('results/Signal_peptide_generator.h5', overwrite=True)
 
