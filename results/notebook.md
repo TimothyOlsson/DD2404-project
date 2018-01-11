@@ -242,20 +242,31 @@ Time is running short and I need to do the last fixes to my models and script. O
 ### 2018-01-11
 It has been a long time since the last entry, due to another course taking all the time.
 
-*Many things have changed in the code. Here are a summary of some big changes:
-*Large datasets of negative and positive samples for eukaryotes have been downloaded. Only using bacterial or eukaryotes improved performance.
+Many things have changed in the code. Here are a summary of some big changes:
+
+*Large datasets of negative and positive samples for eukaryotes have been downloaded. Only using bacterial or eukaryotes improved performance
+
 *The data sets are now divided into training, validation and test datasets (like it should be).
+
 *Added a config file (called settings.py) and simple argparser that I will expand on.
+
 *Folder structure improved (i.e similar scripts are in one folder and not spread out).
+
 *Good model has been trained, 94.1% on test set. I will try to improve more to reach 95%.
+
 *The output data is now logged.
+
 *Fixed major bug where labels were flipped when adding data in a certain way.
+
 *Started writing on the report.
 *Improved GAN slightly, but it produces bad results. I will try to find a better solution.
 
 Future work that I will try to finish today/tomorrow:
+
 *Add more comments to the code
+
 *Improve real time plot performance
+
 *Modularize code to use multiprocessing. This will need a complete restructure of code
 
 I will try to finish everything soon and send in the report.
