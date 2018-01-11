@@ -218,9 +218,9 @@ I have also considered changing the way I rank amino acids. At the moment, there
 
 It takes way too long time to load the data now with more data (around 12 minutes). I need to rewrite the function to improve performance.
 
-I improved performance slightly, reducing one minute.
+I improved performance slightly, reduced time to one minute.
 
-WOW! I collected everything to one big list and converted to a numpy array instead of appending to numpy array. Now all the data loads in 0.02 seconds (increase by 36 000 times!)
+I collected everything to one big list and converted to a numpy array instead of appending to numpy array. Now all the data loads in 0.02 seconds (increase by 36 000 times!)
 
 
 ### 2017-12-12
@@ -238,6 +238,42 @@ I have not had time to add entries to the log book, but the commits in github sh
 I could not get a good accuracy on my data, so I switched to another project (Text Generation, see repo in github), where I learned a lot of how you could structure data. One important methods that I learned was one-hot encoding data, which proved to be extremely useful for LSTM. I added the functionallity and it works flawlessly!
 
 Time is running short and I need to do the last fixes to my models and script. One thing that I need to do is to improve the way you change parameters, to improve user experience. This will be a huge task.
+
+### 2018-01-11
+It has been a long time since the last entry, due to another course taking all the time.
+
+*Many things have changed in the code. Here are a summary of some big changes:
+*Large datasets of negative and positive samples for eukaryotes have been downloaded. Only using bacterial or eukaryotes improved performance.
+*The data sets are now divided into training, validation and test datasets (like it should be).
+*Added a config file (called settings.py) and simple argparser that I will expand on.
+*Folder structure improved (i.e similar scripts are in one folder and not spread out).
+*Good model has been trained, 94.1% on test set. I will try to improve more to reach 95%.
+*The output data is now logged.
+*Fixed major bug where labels were flipped when adding data in a certain way.
+*Started writing on the report.
+*Improved GAN slightly, but it produces bad results. I will try to find a better solution.
+
+Future work that I will try to finish today/tomorrow:
+*Add more comments to the code
+*Improve real time plot performance
+*Modularize code to use multiprocessing. This will need a complete restructure of code
+
+I will try to finish everything soon and send in the report.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
