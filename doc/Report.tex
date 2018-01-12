@@ -61,9 +61,9 @@ Signal peptide prediction}  %Fix to center title vertically
 \newpage
 
 \begin{abstract}
-Detecting signal peptides (SPs) in proteins computationally is \dots
-A neural network model was created and trained with X amount of data, which yielded a model with a classification accuracy of 92\% of the validation set.
-The model was used to predict the total amount of SPs in the X and Y organism, which yielded Z and Q SPs respectively, showing that the model is capable of \dots
+A neural network classifier was created to predict signal peptides in proteins. The model was trained with X amount of data, which yielded a classification accuracy of 94\% of the test set.
+The model was used to predict the total amount of signal peptides in the Humans and Mouse proteome, which yielded Z and Q SPs respectively, an error rate of \dots.
+This is showing that the model is capable of learning general structures of signal peptides \dots
 
 %\lipsum[1]  % Fill with nonsense
 \end{abstract}
@@ -95,7 +95,7 @@ The n-region is the first region, which usually contains positively charged amin
 The problem with signal peptide prediction is that polar regions in trans-membrane proteins can mistakenly be predicted as the h-region of a SP, which makes predicting SPs in trans-membrane proteins difficult.
 
 \subsection{Design choices}
-The neural network was written in python with Keras 2.0 and Tensorflow 1.4 as the backend. Keras was used due to it can be used to quickly prototype and develop neural networks while the Tensorflow backend can utilize a gpu to run the calculations.
+The neural network was written in python with Keras 2.0 and Tensorflow 1.4 as the backend. Keras can be used to quickly prototype and develop neural networks while the Tensorflow backend can utilize a gpu to run the calculations.
 
 \subsection{Data sets}
 
