@@ -1,7 +1,5 @@
 %% NOTES:
 
-%REMOVE TOO HIGH LR! COLORS ARE REVERSE
-
 %\begin{Imports and headers} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[a4paper]{article}  %Or use titlepage
@@ -27,6 +25,15 @@
 
 %% For long comments
 \usepackage{comment} 
+
+%% For monospaced fonts
+\usepackage{listings}
+\lstset{
+  columns=flexible,
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  escapeinside=||
+}	
 
 % Turn on the style
 \pagestyle{fancy}
@@ -54,9 +61,9 @@ Signal peptide prediction}  %Fix to center title vertically
 \newpage
 
 \begin{abstract}
-Detecting signal peptides (SPs) in proteins computationally is \dots
-A neural network model was created and trained with X amount of data, which yielded a model with a classification accuracy of 92\% of the validation set.
-The model was used to predict the total amount of SPs in the X and Y organism, which yielded Z and Q SPs respectively, showing that the model is \dots
+A neural network classifier was created to predict signal peptides in proteins. The model was trained with X amount of data, which yielded a classification accuracy of 94\% of the test set.
+The model was used to predict the total amount of signal peptides in the Humans and Mouse proteome, which yielded Z and Q SPs respectively, an error rate of \dots.
+This is showing that the model is capable of learning general structures of signal peptides \dots
 
 %\lipsum[1]  % Fill with nonsense
 \end{abstract}
@@ -67,19 +74,11 @@ The model was used to predict the total amount of SPs in the X and Y organism, w
 
 \section{Introduction}
 
-Course bla. 
 
-The goal is to create a classifier that can accurately classify proteins with \href{https://en.wikipedia.org/wiki/Signal_peptide}{signal peptides} (SPs) in an organisms \href{https://en.wikipedia.org/wiki/Proteome}{proteome}. 
+Signal peptides (SPs) are short regions in peptides that are on average between 16 to 30 amino acids long, but can be as short as 8 and as long as 65 amino acids \cite{sp_length}. SPs function is to translocate proteins to different parts of the cell, such as insertion into membranes, moving proteins to organelles or to help the cell excrete the proteins \cite{sp_wiki}. When analyzing an organisms  \href{https://en.wikipedia.org/wiki/Proteome}{proteome}, the SPs can give an indication where in the cell the proteins are translocated to, which could be of an interest when researching an organism. Not all proteins contain SPs, which is why signal peptide prediction is useful for determining the layout of the cell and for annotating organisms proteomes. 
 
-SPs are short regions in peptides that are on average between 16 to 30 amino acids long, but can be as short as 8 and as long as 65 amino acids \cite{sp_length}. SPs function is to translocate proteins to different parts of the cell, such as insertion into membranes, moving proteins to organelles or to help the cell excrete the proteins \cite{sp_wiki}. 
+Due to the large amount of peptide data available, manually annotating each peptide would require many man-hours, while creating and using a classifier for SPs would be more efficient.
 
-\subsection{The structure of a signal peptide}
-
-An SP is always located near the \href{https://en.wikipedia.org/wiki/N-terminus}{N-terminal} of a protein and have three regions; the n-region, the h-region and the c-region.
-
-The n-region is the first region, which usually contains positively charged amino acids, making the region very polar and hydrophilic. Then comes the h-region, which contains mostly hydrophobic amino acids that forms an \href{https://en.wikipedia.org/wiki/Alpha_helix}{$\alpha$-helix} and lastly the c-region, which is usually a sequence of 3 to 8 non-charged polar amino acids. After the c-region, there is usually a cleavage site that have a tendency to be surrounded by small, uncharged amino acids.
-
-When analyzing an organisms proteome, the SPs can give an indication where in the cell the proteins are translocated to which could be of an interest when researching an organism. Not all proteins contain SPs, which is why signal peptide prediction is useful for determining the layout of the cell and for annotating organisms proteomes. The problem with signal peptide prediction is that polar regions in trans-membrane proteins can mistakenly be predicted as the h-region of an SP, which makes predicting SPs in trans-membrane proteins difficult.
 
 %\end{Introduction} 
 
@@ -87,8 +86,16 @@ When analyzing an organisms proteome, the SPs can give an indication where in th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methods and models}
 
+\subsection{The structure of an Signal Peptide}
+
+SPs are located near the \href{https://en.wikipedia.org/wiki/N-terminus}{N-terminal} of a protein and have three regions; the n-region, the h-region and the c-region.
+
+The n-region is the first region, which usually contains positively charged amino acids, making the region very polar and hydrophilic. Then comes the h-region, which contains mostly hydrophobic amino acids that forms an \href{https://en.wikipedia.org/wiki/Alpha_helix}{$\alpha$-helix} and lastly the c-region, which is usually a sequence of 3 to 8 non-charged polar amino acids. After the c-region, there is usually a cleavage site that have a tendency to be surrounded by small, uncharged amino acids.
+
+The problem with signal peptide prediction is that polar regions in trans-membrane proteins can mistakenly be predicted as the h-region of a SP, which makes predicting SPs in trans-membrane proteins difficult.
+
 \subsection{Design choices}
-The neural network was written in python with Keras 2.0 and tensorflow 1.4 as the backend. The reason for using keras was that it can be used to quickly prototype and develop neural networks and with the tensorflow backend, a gpu can be used to run the calculations.
+The neural network was written in python with Keras 2.0 and Tensorflow 1.4 as the backend. Keras can be used to quickly prototype and develop neural networks while the Tensorflow backend can utilize a gpu to run the calculations.
 
 \subsection{Data sets}
 
@@ -97,7 +104,7 @@ Some samples was extracted from NCBI ftp server, by extracting proteins annotate
 Many of the positive samples were scraped from Signal Peptide database. A majority of the samples were bacterial proteins.
 Most samples were extracted from Swissprot protein database. Mostly eukaryotic proteins, both negative and positive.
 
-Proteomes from Homo sapiens, Mus musculus and Escherichia coli were obtained from Swissprot, a database of high-quality manually annotated proteins. 
+Proteomes from Homo sapiens and Mus musculus were obtained from Swissprot, a database of high-quality manually annotated proteins \cite{swissprot}.
 
 \begin{table}[H]
 \centering
@@ -120,25 +127,26 @@ Typical signal peptide from dataset:
 \subsection{Data preprocessing}
 
 The protein sequences (samples) were contained in \verb|.fasta| files.
-The first 30 amino acids from each sample were taken and sequences that were too short were padded with X.
-First, the samples were cleared from all amino acids that were not one of the 20 standard amino acids. Unknown amino acids were labeled as X.
-Each amino acids were then one-hot encoded (https://en.wikipedia.org/wiki/One-hot) and merged into one 2d array for each sample, creating a 3d array for all the samples.
+The first amino acid was removed, due to high bias towards some amino acids, mainly Methionine, see Figure~\ref{fig:seqlogo}.
+The following 30 amino acids from each sample were taken and sequences that were too short were padded with X.
+Then, the samples were cleared from all amino acids that were not one of the 20 standard amino acids. Unknown amino acids were labeled as X.
+Each amino acids were then \href{https://en.wikipedia.org/wiki/One-hot}{one-hot encoded} and merged into one 2d array for each sample, creating a 3d array for all the samples.
 Negative samples were labeled as 0 and positive samples were labeled as 1.
-The data was lastly \href{https://en.wikipedia.org/wiki/Oversampling_and_undersampling_in_data_analysis}{undersampled}, making the ratio between negative and positive samples 50/50
+The data was lastly \href{https://en.wikipedia.org/wiki/Oversampling_and_undersampling_in_data_analysis}{undersampled}, making the ratio between negative and positive samples 50/50.
 
 \subsection{Neural Network structure}
-The neural network was based on bidirectional \href{http://colah.github.io/posts/2015-08-Understanding-LSTMs/}{LSTMs}, due to LSTMs effectiveness with sequences and pattern recognition. \cite{rnn_effectiveness}. The bidirectionality of the network was added due to its success in other areas of machine learning with sequences and time-series predictions \cite{bidirectional_1} \cite{bidirectional_2}.
+The neural network was based on bidirectional \href{http://colah.github.io/posts/2015-08-Understanding-LSTMs/}{LSTMs}, due to LSTMs effectiveness with sequences and pattern recognition \cite{rnn_effectiveness}. The bidirectionality of the network was added due to its success in other areas of machine learning with sequences and time-series predictions \cite{bidirectional_1} \cite{bidirectional_2}. The input was one 2d array and the output was one float, ranging from 0 to 1. A regularization layer was added between the LSTM layers to prevent overfittning.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{pictures/model.png}
+\includegraphics[width=0.4\textwidth]{pictures/model.png}
 \caption{\label{fig:model_fig}Prediction model}
 \end{figure}
 
 
 \subsection{Related works}
 
-There are multiple softwares and websites that predicts signal peptides, such as SignalP, SignalBlast and Predisi to name a few \cite{sp_predict1} \cite{sp_predict2} \cite{sp_predict3}. Neural Networks (NN) are the most used methods while some sites use Hidden Markov Models (HMM) instead. Similar methods are used to predict other biological problems, such as motifs and trans-membrane regions in proteins.
+There are multiple softwares and websites that predicts signal peptides, such as SignalP, SignalBlast and Predisi to name a few \cite{sp_predict1} \cite{sp_predict2} \cite{sp_predict3}. Neural Networks (NN) are the most used methods while some sites use Hidden Markov Models (HMM) instead. Similar methods can used to predict other biological problems, such as motifs and trans-membrane regions in proteins.
 
 %\end{Methods and models}
 
@@ -147,7 +155,30 @@ There are multiple softwares and websites that predicts signal peptides, such as
 \section{Evaluating model}
 
 \subsection{Model performance}
-ROC-curve, CM-matrix for full data full data.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.7\textwidth]{pictures/train_acc.png}
+\caption{\label{fig:train_acc}Model accuracy during training}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.7\textwidth]{pictures/train_loss.png}
+\caption{\label{fig:train_loss}Model loss during training}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.7\textwidth]{pictures/train_cm.png}
+\caption{\label{fig:train_cm}Confusion matrix on test set after training}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.7\textwidth]{pictures/train_roc.png}
+\caption{\label{fig:train_roc}ROC curve on test set after training}
+\end{figure}
 
 \subsection{Signal peptide detection in transmembrane proteins}
 Evaluate transmembrane and non transmembrane acc/loss.
@@ -182,6 +213,9 @@ Is it good enough? Can the model be improved? Can you use other methods (ex HMM,
 \bibitem{sp_wiki} Signal peptides wikipedia
 \url{https://en.wikipedia.org/wiki/Signal_peptide}
 
+\bibitem{swissprot} Swissprot database
+\url{http://www.uniprot.org/uniprot/?query=reviewed:yes}
+
 \bibitem{rnn_effectiveness} ???
 \url{http://karpathy.github.io/2015/05/21/rnn-effectiveness/}
 
@@ -214,16 +248,37 @@ Bioinformatics, 24, pp. 2172-2176 (2008), \url{http://sigpep.services.came.sbg.a
 
 \section{Appendix}
 
-\subsection{Training the model}
-Train time, gpu used, specs, time to train etc...
-Gpu is needed to improve training speed. Add epoch time for gpu and cpu
-
-Everything that the person reading don't want to know
-
-
 \subsection{Model details}
 
-??
+\begin{lstlisting}
+_________________________________________________________________
+Layer (type)                      Output Shape         Param #   
+=================================================================
+bidirectional_1 (Bidirection     (None, 30, 128)       44032     
+_________________________________________________________________
+dropout_1 (Dropout)              (None, 30, 128)       0         
+_________________________________________________________________
+bidirectional_2 (Bidirection     (None, 128)           98816     
+_________________________________________________________________
+dropout_2 (Dropout)              (None, 128)           0         
+_________________________________________________________________
+dense_1 (Dense)                  (None, 1)             129       
+=================================================================
+Total params: 142,977
+Trainable params: 142,977
+Non-trainable params: 0
+_________________________________________________________________
+Input shape: (None, 30, 21)
+Output shape: (None, 1)
+
+\end{lstlisting}
+
+12.3 hours trained with 729 710 samples on a GTX 970.
+Batch size of 4096, dropout of 0.5 for each layer and using ADAM optimizer (default learning rate, 0.0001)
+
+More stuff
+\newline  % bug here after using plaintext, this fixes it
+
 
 \subsection{Pitfalls when training a model}
 Concept of under and overfitting and how to prevent it. Example pictures of bad models.
@@ -253,21 +308,44 @@ more stuff
 \end{figure}
 
 
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.7\textwidth]{pictures/no_shuffle.png}
+\caption{\label{fig:no_shuffle}Data not shuffled}
+\end{figure}
+
 \subsection{Additional features}
 
-Loading the data can be used in many ways. One way is to augment the data by dividing each sequence into many chunks, taking the chunk closest to the N-terminal as positive and the rest as negative.
+
+List of things
+\begin{enumerate}
+\item Data augmentation,
+\item Data conversion
+\end{enumerate}
+\begin{itemize}
+\item Things to add,
+\item Other things
+\end{itemize}
+
+
+The data can be loaded in many ways. One way is to augment the data by dividing each sequence into many chunks, labeling the chunk closest to the N-terminal as positive and the rest as negative.
 
 Due to the large amount of data obtained, data augmentation were not used.
+\linebreak
 
-Advantages with data augmentation: 
-Each positive sample would yield multiple negative samples, so smaller data sets can be used for training.
-Using positive samples and the negative samples from different organisms could make the model overfit to a particular amino acid bias. Using other regions of the positive samples would preserve the amino acid bias, making the data more consistent.
-Some trans-membrane regions of the proteins might be very similar to signal peptide regions, which would force the model to improve the prediction of trans-membrane proteins. 
+Advantages with data augmentation:
+\begin{itemize}
+\item Each positive sample would yield multiple negative samples, so smaller data sets can be used for training.
+\item Using positive samples and the negative samples from different organisms could make the model overfit to a particular amino acid bias. Using other regions of the positive samples would preserve the amino acid bias, making the data more consistent.
+\item Some trans-membrane regions of the proteins might be very similar to signal peptide regions, which would force the model to improve the prediction of trans-membrane proteins. 
+\end{itemize}
 
 Disadvantages with data augmentation:
-The first amino acid in the N-terminal has an extremely high bias towards some amino acids, mainly Methionine, see Figure~\ref{fig:seqlogo}. The model would then have a high affinity for the first amino acids, creating a poor model that would only detect if the sequence is located in the N-terminal or not. The first amino acids of each sequence were removed, so the this would not be a problem.
-The N-terminal of peptides both with and without SPs might have a similar structure compared to other regions of protein, which would make the model as stated above, only be able to distinguish if the region is at the N-terminal or not. To prevent this problem, both negative samples from the N-region and other regions of the proteins could be used.
-
+\begin{itemize}
+\item The first amino acid in the N-terminal has an high bias towards some amino acids, mainly Methionine, see Figure~\ref{fig:seqlogo}. The model would then have a high affinity for the first amino acids, creating a poor model that would only detect if the sequence is located in the N-terminal or not. The first amino acids of each sequence were removed, preventing the problem if data augmentation were to be used.
+\item The N-terminal of peptides both with and without SPs might have a similar structure compared to other regions of protein, which would make the model as stated above, only be able to distinguish if the region is at the N-terminal or not. To prevent this problem, using both negative samples from N-regions and other regions should be used.
+\end{itemize}
 
 \subsection{Generative Model} \label{GAN}
 
@@ -275,27 +353,3 @@ The N-terminal of peptides both with and without SPs might have a similar struct
 %\end{Appendix}
 
 \end{document}
-
-
-%\begin{DUMP}
-
-\begin{comment}
-
-\LaTeX{} is great at great tool. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-\[S_n = \frac{X_1 + X_2 + \cdots + X_n}{n} = \frac{1}{n}\sum_{i}^{n} X_i\]
- $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
-
-List of things \dots
-\begin{enumerate}
-\item Problems,
-\item Structure data
-\end{enumerate}
-\dots More things \dots
-\begin{itemize}
-\item Things to add,
-\item Testing
-\end{itemize}
-
-\end{comment}
-
-%\end{DUMP}
