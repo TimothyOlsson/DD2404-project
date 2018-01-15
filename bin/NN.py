@@ -754,6 +754,16 @@ if train_GAN:
             logger.info('Discriminator loss: ' + str(history_disc.history['loss'][-1]))
 
         if _train_gen:
+            """
+            print('Training generator with real data...')
+            discriminator.trainable = False
+            history_gen = generator.fit(random_data,
+                                        X_positive,
+                                        batch_size=GAN_batch_size,
+                                        epochs=5)
+            logger.info('Generator loss: ' + str(history_gen.history['loss'][-1]))
+            """
+
             print('Training generator to fool discriminator...')
             discriminator.trainable = False
             history_gen = GAN.fit(random_data,
