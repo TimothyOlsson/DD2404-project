@@ -1,0 +1,60 @@
+2018-01-15 19:58:12,847 - load_data - INFO - Loaded 246820 samples
+2018-01-15 19:58:23,691 - load_data - INFO - Dataset is 621.9864 mb in memory
+2018-01-15 19:58:23,694 - load_data - INFO - 29572 positive samples and 217248 negative samples
+2018-01-15 19:58:23,696 - load_data - INFO - It took 25.85668 seconds to load
+2018-01-15 19:59:18,060 - load_data - INFO - Loaded 246820 samples
+2018-01-15 19:59:28,785 - load_data - INFO - Dataset is 621.9864 mb in memory
+2018-01-15 19:59:28,790 - load_data - INFO - 29572 positive samples and 217248 negative samples
+2018-01-15 19:59:28,793 - load_data - INFO - It took 26.01157 seconds to load
+2018-01-15 20:00:53,045 - load_data - INFO - Loaded 246820 samples
+2018-01-15 20:01:04,967 - load_data - INFO - Dataset is 621.9864 mb in memory
+2018-01-15 20:01:04,970 - load_data - INFO - 29572 positive samples and 217248 negative samples
+2018-01-15 20:01:04,974 - load_data - INFO - It took 28.35023 seconds to load
+2018-01-15 22:37:55,886 - load_data - INFO - Loaded 250794 samples
+2018-01-15 22:38:06,572 - load_data - INFO - Dataset is 632.00088 mb in memory
+2018-01-15 22:38:06,574 - load_data - INFO - 32212 positive samples and 218582 negative samples
+2018-01-15 22:38:06,575 - load_data - INFO - It took 24.88644 seconds to load
+2018-01-15 22:39:15,855 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:39:15,952 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:39:15,953 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:39:15,954 - load_data - INFO - It took 0.22972 seconds to load
+2018-01-15 22:39:55,952 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:39:56,050 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:39:56,052 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:39:56,053 - load_data - INFO - It took 0.22893 seconds to load
+2018-01-15 22:43:38,468 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:43:38,585 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:43:38,586 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:43:38,588 - load_data - INFO - It took 0.24962 seconds to load
+2018-01-15 22:44:00,733 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:44:00,848 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:44:00,850 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:44:00,852 - load_data - INFO - It took 0.24970 seconds to load
+2018-01-15 22:44:14,732 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:44:14,848 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:44:14,849 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:44:14,849 - load_data - INFO - It took 0.24545 seconds to load
+2018-01-15 22:44:51,968 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:44:52,082 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:44:52,083 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:44:52,085 - load_data - INFO - It took 0.24620 seconds to load
+2018-01-15 22:45:07,129 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:45:07,244 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:45:07,246 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:45:07,248 - load_data - INFO - It took 0.24847 seconds to load
+2018-01-15 22:45:28,879 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:45:28,994 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:45:28,995 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:45:28,995 - load_data - INFO - It took 0.24409 seconds to load
+2018-01-15 22:45:54,101 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:45:54,217 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:45:54,218 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:45:54,220 - load_data - INFO - It took 0.24765 seconds to load
+2018-01-15 22:46:15,924 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:46:16,040 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:46:16,041 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:46:16,043 - load_data - INFO - It took 0.24777 seconds to load
+2018-01-15 22:46:46,776 - load_data - INFO - Loaded 2362 samples
+2018-01-15 22:46:46,891 - load_data - INFO - Dataset is 5.95224 mb in memory
+2018-01-15 22:46:46,892 - load_data - INFO - 1275 positive samples and 1087 negative samples
+2018-01-15 22:46:46,892 - load_data - INFO - It took 0.24335 seconds to load
