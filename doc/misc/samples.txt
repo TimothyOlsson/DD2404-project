@@ -1,0 +1,23 @@
+TRAIN SETS
+
+tot negative: 574 423
+tot positive: 570 598
+
+Neg:
+Swissprot: 573 089
+Course dataset: 1334
+
+Pos:
+Proline db: 1984
+Signal peptide database: 13098
+Swissprot: 554196
+Course dataset: 1320
+
+
+QUERY SETS
+
+Human (Swissprot): 18807 pos, 144573 neg
+Mouse (Swissprot): 10765 pos, 72675 neg
+
+non_tm (Course): 1147 pos, 1087 neg
+tm (Course): 222 pos, 247 neg
