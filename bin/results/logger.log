@@ -1,113 +1,772 @@
-2018-01-15 06:31:23,673 - __main__ - INFO - --------------------START OF RUN--------------------
-2018-01-15 06:31:23,674 - __main__ - INFO - {'__name__': '__main__', '__doc__': None, '__package__': None, '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x0000027603B0AAC8>, '__spec__': None, '__annotations__': {}, '__builtins__': <module 'builtins' (built-in)>, '__file__': 'NN.py', '__cached__': None, 'use_gpu': True, 'load_saved_array': False, 'data_folder': '../data/training_data', 'equalize_data': True, 'save_array': True, 'seq_length': 30, 'data_augmentation': False, 'fix_samples': 'IGNORE', 'vectorize': True, 'use_ascii': False, 'load_saved_model': False, 'train_loaded_model': False, 'choosen_model': 2, 'train_test_split': 0.8, 'train_val_split': 0.8, 'limit_samples': None, 'lr': 0.0001, 'decay': 1.1e-05, 'momentum': 0.5, 'epochs': 3000, 'batch_size': 4096, 'use_lr_scheduler': True, 'lr_scheduler_plan': {}, 'config_plot_realtime': True, 'plot_realtime_interval': 1, 'plot_performance': False, 'train_GAN': True, 'load_trained_GAN': True, 'GAN_lr': 0.0001, 'GAN_epochs': 3000, 'GAN_batch_size': 512, 'GAN_limit_samples': None, 'argparse': <module 'argparse' from 'F:\\Python\\lib\\argparse.py'>, 'parser': ArgumentParser(prog='NN.py', usage=None, description='Keras based program that predicts Signal Peptides', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), 'args': Namespace(), 'logging': <module 'logging' from 'F:\\Python\\lib\\logging\\__init__.py'>, 'os': <module 'os' from 'F:\\Python\\lib\\os.py'>, 'logger': <Logger __main__ (INFO)>, 'handler': <FileHandler C:\Users\Timothy''s PC\OneDrive\Dokument\GitHub\DD2404-project\bin\results\logger.log (INFO)>, 'formatter': <logging.Formatter object at 0x0000027603D52E48>}
-2018-01-15 06:32:59,131 - __main__ - INFO - Using gpu...
-2018-01-15 06:33:12,951 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,952 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
-2018-01-15 06:33:12,952 - __main__ - INFO - =================================================================
-2018-01-15 06:33:12,953 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
-2018-01-15 06:33:12,953 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,953 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
-2018-01-15 06:33:12,953 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,954 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
-2018-01-15 06:33:12,954 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,954 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
-2018-01-15 06:33:12,955 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,955 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
-2018-01-15 06:33:12,955 - __main__ - INFO - =================================================================
-2018-01-15 06:33:12,955 - __main__ - INFO - Total params: 142,977
-2018-01-15 06:33:12,955 - __main__ - INFO - Trainable params: 142,977
-2018-01-15 06:33:12,956 - __main__ - INFO - Non-trainable params: 0
-2018-01-15 06:33:12,956 - __main__ - INFO - _________________________________________________________________
-2018-01-15 06:33:12,956 - __main__ - INFO - Input shape: (None, 30, 21)
-2018-01-15 06:33:12,956 - __main__ - INFO - Output shape: (None, 1)
-2018-01-15 06:34:18,430 - scripts.load_data - INFO - Loaded 1138012 samples
-2018-01-15 06:35:14,987 - scripts.load_data - INFO - Dataset is 2867.79024 mb in memory
-2018-01-15 06:35:14,993 - scripts.load_data - INFO - 567546 positive samples and 570466 negative samples
-2018-01-15 06:35:14,993 - scripts.load_data - INFO - It took 121.00498 seconds to load
-2018-01-15 06:35:15,060 - scripts.load_data - INFO - More negative than positive samples. Removing 2920 negative samples
-2018-01-15 06:35:17,797 - scripts.load_data - INFO - Equalized, removed 2920 samples
-2018-01-15 06:35:17,806 - scripts.load_data - INFO - 567546 positive samples and 567546 negative samples
-2018-01-15 06:35:17,807 - scripts.load_data - INFO - It took 2.81273 seconds to equalize
-2018-01-15 06:35:17,807 - scripts.load_data - INFO - Saving array to file...
-2018-01-15 06:35:47,470 - __main__ - INFO - Train set: 362844 positive samples and 363615 negative samples
-2018-01-15 06:35:47,472 - __main__ - INFO - Validation set: 91098 positive samples and 90517 negative samples
-2018-01-15 06:35:47,475 - __main__ - INFO - Test set: 113604 positive samples and 113414 negative samples
-2018-01-15 06:35:47,477 - __main__ - INFO - Press ctrl+c to stop training early
-2018-01-15 18:36:17,048 - __main__ - INFO - 
-Stopped training...
-2018-01-15 18:36:25,085 - __main__ - INFO - It took 43237.60715 seconds to train
-2018-01-15 18:36:25,085 - __main__ - INFO - Evaluation of model processing...
-2018-01-15 18:41:35,546 - __main__ - INFO - 
-binary_accuracy: 94.12%
-2018-01-15 18:41:35,546 - __main__ - INFO - Saving model...
-2018-01-15 18:41:35,933 - __main__ - INFO - Plotting accuracy...
-2018-01-15 18:41:36,188 - __main__ - INFO - Plotting loss...
-2018-01-15 18:41:36,389 - __main__ - INFO - Creating confusion matrix on test samples...
-2018-01-15 18:46:56,553 - __main__ - INFO - Creating ROC curve
-2018-01-15 18:52:11,816 - __main__ - INFO - Calculating metrics
-2018-01-15 18:52:11,817 - __main__ - INFO - Accuracy: 0.9412, Precision: 0.9258, Sensitivity: 0.9596, Specificity: 0.9229
-2018-01-15 18:52:12,355 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x000002761E276EF0> (21, 256)
-2018-01-15 18:52:12,360 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x000002761E276EF0> (64, 256)
-2018-01-15 18:52:12,536 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x000002761E276C88> (128, 256)
-2018-01-15 18:52:12,537 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x000002761E276C88> (64, 256)
-2018-01-15 18:52:12,607 - __main__ - INFO - Bias of layer <keras.layers.core.Dense object at 0x000002767F764BE0> (128, 1)
-2018-01-15 18:52:12,608 - __main__ - INFO - Output of layer <keras.layers.core.Dense object at 0x000002767F764BE0> (1,)
-2018-01-15 18:52:12,892 - __main__ - INFO - Creating generator...
-2018-01-15 18:52:13,199 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:13,200 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
-2018-01-15 18:52:13,200 - __main__ - INFO - =================================================================
-2018-01-15 18:52:13,200 - __main__ - INFO - conv1d_1 (Conv1D)            (None, 11, 128)           53888     
-2018-01-15 18:52:13,200 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:13,201 - __main__ - INFO - lstm_3 (LSTM)                (None, 64)                49408     
-2018-01-15 18:52:13,201 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:13,201 - __main__ - INFO - dense_2 (Dense)              (None, 630)               40950     
-2018-01-15 18:52:13,201 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:13,201 - __main__ - INFO - reshape_1 (Reshape)          (None, 30, 21)            0         
-2018-01-15 18:52:13,201 - __main__ - INFO - =================================================================
-2018-01-15 18:52:13,202 - __main__ - INFO - Total params: 144,246
-2018-01-15 18:52:13,202 - __main__ - INFO - Trainable params: 144,246
-2018-01-15 18:52:13,202 - __main__ - INFO - Non-trainable params: 0
-2018-01-15 18:52:13,202 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:13,202 - __main__ - INFO - None
-2018-01-15 18:52:13,203 - __main__ - INFO - Input shape: (None, 30, 21)
-2018-01-15 18:52:13,203 - __main__ - INFO - Output shape: (None, 30, 21)
-2018-01-15 18:52:13,203 - __main__ - INFO - Creating discriminator...
-2018-01-15 18:52:14,257 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,257 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
-2018-01-15 18:52:14,257 - __main__ - INFO - =================================================================
-2018-01-15 18:52:14,258 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
-2018-01-15 18:52:14,258 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,258 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
-2018-01-15 18:52:14,258 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,258 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
-2018-01-15 18:52:14,259 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,259 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
-2018-01-15 18:52:14,259 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,259 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
-2018-01-15 18:52:14,259 - __main__ - INFO - =================================================================
-2018-01-15 18:52:14,259 - __main__ - INFO - Total params: 142,977
-2018-01-15 18:52:14,259 - __main__ - INFO - Trainable params: 142,977
-2018-01-15 18:52:14,260 - __main__ - INFO - Non-trainable params: 0
-2018-01-15 18:52:14,260 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:14,260 - __main__ - INFO - None
-2018-01-15 18:52:14,260 - __main__ - INFO - Input shape: (None, 30, 21)
-2018-01-15 18:52:14,260 - __main__ - INFO - Output shape: (None, 1)
-2018-01-15 18:52:14,273 - __main__ - INFO - Compiling models...
-2018-01-15 18:52:26,108 - __main__ - INFO - GAN models not found...
-2018-01-15 18:52:26,109 - __main__ - INFO - Setting up GAN (generator + discriminator)
-2018-01-15 18:52:26,860 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:26,860 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
-2018-01-15 18:52:26,862 - __main__ - INFO - =================================================================
-2018-01-15 18:52:26,862 - __main__ - INFO - sequential_3 (Sequential)    (None, 30, 21)            144246    
-2018-01-15 18:52:26,863 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:26,863 - __main__ - INFO - sequential_4 (Sequential)    (None, 1)                 142977    
-2018-01-15 18:52:26,863 - __main__ - INFO - =================================================================
-2018-01-15 18:52:26,864 - __main__ - INFO - Total params: 287,223
-2018-01-15 18:52:26,864 - __main__ - INFO - Trainable params: 144,246
-2018-01-15 18:52:26,864 - __main__ - INFO - Non-trainable params: 142,977
-2018-01-15 18:52:26,865 - __main__ - INFO - _________________________________________________________________
-2018-01-15 18:52:26,865 - __main__ - INFO - None
-2018-01-15 18:52:26,865 - __main__ - INFO - Input shape: (None, 30, 21)
-2018-01-15 18:52:26,866 - __main__ - INFO - Output shape: (None, 1)
-2018-01-15 18:52:26,866 - __main__ - INFO - Fixing real data...
-2018-01-15 18:52:27,614 - __main__ - INFO - ----------Iteration 0----------
+2018-01-15 21:27:33,831 - __main__ - INFO - --------------------START OF RUN--------------------
+2018-01-15 21:27:33,831 - __main__ - INFO - {'__name__': '__main__', '__doc__': None, '__package__': None, '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0x00000200DE2DAAC8>, '__spec__': None, '__annotations__': {}, '__builtins__': <module 'builtins' (built-in)>, '__file__': 'NN.py', '__cached__': None, 'use_gpu': True, 'load_saved_array': True, 'data_folder': '../data/training_data', 'equalize_data': True, 'save_array': True, 'seq_length': 30, 'data_augmentation': False, 'fix_samples': 'IGNORE', 'vectorize': True, 'use_ascii': False, 'load_saved_model': True, 'train_loaded_model': False, 'choosen_model': 2, 'train_test_split': 0.8, 'train_val_split': 0.8, 'limit_samples': 10000, 'lr': 0.0001, 'decay': 1.1e-05, 'momentum': 0.5, 'epochs': 3000, 'batch_size': 4096, 'use_lr_scheduler': True, 'lr_scheduler_plan': {}, 'config_plot_realtime': True, 'plot_realtime_interval': 1, 'plot_performance': True, 'train_GAN': True, 'load_trained_GAN': True, 'GAN_lr': 0.0001, 'GAN_epochs': 3000, 'GAN_batch_size': 512, 'GAN_limit_samples': None, 'query_data_folder': '../data/query_data/human', 'argparse': <module 'argparse' from 'F:\\Python\\lib\\argparse.py'>, 'parser': ArgumentParser(prog='NN.py', usage=None, description='Keras based program that predicts Signal Peptides', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), 'args': Namespace(), 'logging': <module 'logging' from 'F:\\Python\\lib\\logging\\__init__.py'>, 'os': <module 'os' from 'F:\\Python\\lib\\os.py'>, 'logger': <Logger __main__ (INFO)>, 'handler': <FileHandler C:\Users\Timothy''s PC\OneDrive\Dokument\GitHub\DD2404-project\bin\results\logger.log (INFO)>, 'formatter': <logging.Formatter object at 0x00000200E0223908>}
+2018-01-15 21:27:35,653 - __main__ - INFO - Using gpu...
+2018-01-15 21:27:37,771 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,772 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-15 21:27:37,772 - __main__ - INFO - =================================================================
+2018-01-15 21:27:37,772 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
+2018-01-15 21:27:37,772 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,773 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
+2018-01-15 21:27:37,773 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,773 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
+2018-01-15 21:27:37,773 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,773 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
+2018-01-15 21:27:37,774 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,774 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
+2018-01-15 21:27:37,774 - __main__ - INFO - =================================================================
+2018-01-15 21:27:37,774 - __main__ - INFO - Total params: 142,977
+2018-01-15 21:27:37,774 - __main__ - INFO - Trainable params: 142,977
+2018-01-15 21:27:37,774 - __main__ - INFO - Non-trainable params: 0
+2018-01-15 21:27:37,775 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:37,775 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-15 21:27:37,775 - __main__ - INFO - Output shape: (None, 1)
+2018-01-15 21:27:43,662 - __main__ - INFO - Train set: 3162 positive samples and 3238 negative samples
+2018-01-15 21:27:43,663 - __main__ - INFO - Validation set: 794 positive samples and 806 negative samples
+2018-01-15 21:27:43,663 - __main__ - INFO - Test set: 1030 positive samples and 970 negative samples
+2018-01-15 21:27:43,663 - __main__ - INFO - Loading model from file...
+2018-01-15 21:27:51,660 - __main__ - INFO - Loaded model: 
+2018-01-15 21:27:51,660 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,660 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-15 21:27:51,660 - __main__ - INFO - =================================================================
+2018-01-15 21:27:51,660 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
+2018-01-15 21:27:51,661 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,661 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
+2018-01-15 21:27:51,661 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,662 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
+2018-01-15 21:27:51,662 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,662 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
+2018-01-15 21:27:51,662 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,663 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
+2018-01-15 21:27:51,663 - __main__ - INFO - =================================================================
+2018-01-15 21:27:51,664 - __main__ - INFO - Total params: 142,977
+2018-01-15 21:27:51,664 - __main__ - INFO - Trainable params: 142,977
+2018-01-15 21:27:51,664 - __main__ - INFO - Non-trainable params: 0
+2018-01-15 21:27:51,665 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:27:51,666 - __main__ - INFO - Evaluation of model processing...
+2018-01-15 21:27:54,710 - __main__ - INFO - 
+binary_accuracy: 95.10%
+2018-01-15 21:27:54,711 - __main__ - INFO - Saving model...
+2018-01-15 21:27:54,961 - __main__ - INFO - Plotting accuracy...
+2018-01-15 21:27:55,280 - __main__ - INFO - Plotting loss...
+2018-01-15 21:27:55,752 - __main__ - INFO - Creating confusion matrix on test samples...
+2018-01-15 21:27:59,175 - __main__ - INFO - Creating ROC curve
+2018-01-15 21:28:02,457 - __main__ - INFO - Calculating metrics
+2018-01-15 21:28:02,458 - __main__ - INFO - Accuracy: 0.951, Precision: 0.9371, Sensitivity: 0.9699, Specificity: 0.9309
+2018-01-15 21:28:03,061 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x00000200F48558D0> (21, 256)
+2018-01-15 21:28:03,062 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x00000200F48558D0> (64, 256)
+2018-01-15 21:28:03,205 - __main__ - INFO - Bias of layer <keras.layers.wrappers.Bidirectional object at 0x00000200F48559B0> (128, 256)
+2018-01-15 21:28:03,206 - __main__ - INFO - Output of layer <keras.layers.wrappers.Bidirectional object at 0x00000200F48559B0> (64, 256)
+2018-01-15 21:28:03,283 - __main__ - INFO - Bias of layer <keras.layers.core.Dense object at 0x00000200F52FA588> (128, 1)
+2018-01-15 21:28:03,284 - __main__ - INFO - Output of layer <keras.layers.core.Dense object at 0x00000200F52FA588> (1,)
+2018-01-15 21:28:04,214 - __main__ - INFO - Creating generator...
+2018-01-15 21:28:04,372 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,373 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-15 21:28:04,375 - __main__ - INFO - =================================================================
+2018-01-15 21:28:04,375 - __main__ - INFO - conv1d_1 (Conv1D)            (None, 11, 512)           215552    
+2018-01-15 21:28:04,375 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,376 - __main__ - INFO - batch_normalization_1 (Batch (None, 11, 512)           2048      
+2018-01-15 21:28:04,376 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,376 - __main__ - INFO - conv1d_2 (Conv1D)            (None, 1, 512)            2884096   
+2018-01-15 21:28:04,377 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,377 - __main__ - INFO - batch_normalization_2 (Batch (None, 1, 512)            2048      
+2018-01-15 21:28:04,377 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,377 - __main__ - INFO - conv1d_3 (Conv1D)            (None, 1, 512)            262656    
+2018-01-15 21:28:04,378 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,378 - __main__ - INFO - flatten_1 (Flatten)          (None, 512)               0         
+2018-01-15 21:28:04,378 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,379 - __main__ - INFO - dense_2 (Dense)              (None, 630)               323190    
+2018-01-15 21:28:04,379 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,379 - __main__ - INFO - reshape_1 (Reshape)          (None, 30, 21)            0         
+2018-01-15 21:28:04,379 - __main__ - INFO - =================================================================
+2018-01-15 21:28:04,380 - __main__ - INFO - Total params: 3,689,590
+2018-01-15 21:28:04,380 - __main__ - INFO - Trainable params: 3,687,542
+2018-01-15 21:28:04,380 - __main__ - INFO - Non-trainable params: 2,048
+2018-01-15 21:28:04,381 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:04,381 - __main__ - INFO - None
+2018-01-15 21:28:04,382 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-15 21:28:04,382 - __main__ - INFO - Output shape: (None, 30, 21)
+2018-01-15 21:28:04,385 - __main__ - INFO - Creating discriminator...
+2018-01-15 21:28:05,449 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,450 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-15 21:28:05,451 - __main__ - INFO - =================================================================
+2018-01-15 21:28:05,451 - __main__ - INFO - bidirectional_1 (Bidirection (None, 30, 128)           44032     
+2018-01-15 21:28:05,451 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,452 - __main__ - INFO - dropout_1 (Dropout)          (None, 30, 128)           0         
+2018-01-15 21:28:05,452 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,452 - __main__ - INFO - bidirectional_2 (Bidirection (None, 128)               98816     
+2018-01-15 21:28:05,453 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,453 - __main__ - INFO - dropout_2 (Dropout)          (None, 128)               0         
+2018-01-15 21:28:05,453 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,453 - __main__ - INFO - dense_1 (Dense)              (None, 1)                 129       
+2018-01-15 21:28:05,454 - __main__ - INFO - =================================================================
+2018-01-15 21:28:05,454 - __main__ - INFO - Total params: 142,977
+2018-01-15 21:28:05,454 - __main__ - INFO - Trainable params: 142,977
+2018-01-15 21:28:05,454 - __main__ - INFO - Non-trainable params: 0
+2018-01-15 21:28:05,455 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:05,455 - __main__ - INFO - None
+2018-01-15 21:28:05,455 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-15 21:28:05,456 - __main__ - INFO - Output shape: (None, 1)
+2018-01-15 21:28:05,469 - __main__ - INFO - Compiling models...
+2018-01-15 21:28:17,054 - __main__ - INFO - Setting up GAN (generator + discriminator)
+2018-01-15 21:28:18,001 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:18,001 - __main__ - INFO - Layer (type)                 Output Shape              Param #   
+2018-01-15 21:28:18,003 - __main__ - INFO - =================================================================
+2018-01-15 21:28:18,003 - __main__ - INFO - sequential_5 (Sequential)    (None, 30, 21)            144246    
+2018-01-15 21:28:18,003 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:18,004 - __main__ - INFO - sequential_4 (Sequential)    (None, 1)                 142977    
+2018-01-15 21:28:18,004 - __main__ - INFO - =================================================================
+2018-01-15 21:28:18,005 - __main__ - INFO - Total params: 287,223
+2018-01-15 21:28:18,005 - __main__ - INFO - Trainable params: 144,246
+2018-01-15 21:28:18,005 - __main__ - INFO - Non-trainable params: 142,977
+2018-01-15 21:28:18,005 - __main__ - INFO - _________________________________________________________________
+2018-01-15 21:28:18,006 - __main__ - INFO - None
+2018-01-15 21:28:18,006 - __main__ - INFO - Input shape: (None, 30, 21)
+2018-01-15 21:28:18,006 - __main__ - INFO - Output shape: (None, 1)
+2018-01-15 21:28:18,007 - __main__ - INFO - Fixing real data...
+2018-01-15 21:28:18,014 - __main__ - INFO - ----------Iteration 0----------
+2018-01-15 21:28:41,895 - __main__ - INFO - Discriminator loss: 0.0877279517638
+2018-01-15 21:28:57,774 - __main__ - INFO - Generator loss: 3.43400032493
+2018-01-15 21:28:58,566 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIFLLLIFIDKDDDDXXXX
+2018-01-15 21:28:58,568 - __main__ - INFO - Generated sequence: DAAXIXIIIIIIIFIIFIFDIKDDDDXXXA
+2018-01-15 21:28:58,570 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFILFIFFDDIDDDDDXXXX
+2018-01-15 21:28:58,571 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIIIFFFIIIKDDDDXXXA
+2018-01-15 21:28:58,573 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIILILLIDIFKDDDDXXXA
+2018-01-15 21:28:58,574 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFIFFIFFKDDDDDXXXA
+2018-01-15 21:28:58,576 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIFFIIIDIDDDDDXXXX
+2018-01-15 21:28:58,578 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIILLFFDFIDKDDDXXXA
+2018-01-15 21:28:58,579 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIILILFIDDDDDDDXXXA
+2018-01-15 21:28:58,581 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFFLIDFKDKDDDXXXX
+2018-01-15 21:28:59,984 - __main__ - INFO - Saving generator...
+2018-01-15 21:28:59,985 - __main__ - INFO - ----------Iteration 1----------
+2018-01-15 21:29:09,690 - __main__ - INFO - Generator loss: 3.41482168931
+2018-01-15 21:29:10,492 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFFIIFDDKDDDDXXXA
+2018-01-15 21:29:10,494 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFILILFFFDIDDDDDXXXA
+2018-01-15 21:29:10,495 - __main__ - INFO - Generated sequence: DAAXIXIIIIFFILLFFFDIIDDDDDXXXA
+2018-01-15 21:29:10,497 - __main__ - INFO - Generated sequence: DAAXIXIIIFIIFILLLIDIDKDDDDXXXX
+2018-01-15 21:29:10,499 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIILFFFFDIIKDDDDXXXX
+2018-01-15 21:29:10,500 - __main__ - INFO - Generated sequence: DAAXIXIIIIFIIFIFIFIFDDDDDDXXXX
+2018-01-15 21:29:10,502 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFILIFFIDFFKDDDDXXXA
+2018-01-15 21:29:10,504 - __main__ - INFO - Generated sequence: XAAXIIIIIIIFIIFFIFIIFDDDDDXXXA
+2018-01-15 21:29:10,505 - __main__ - INFO - Generated sequence: DAAXIXIIIFFFFLIIIIIDKKDDDDXXXA
+2018-01-15 21:29:10,507 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFILFFIFIDKDDDDXXXX
+2018-01-15 21:29:10,556 - __main__ - INFO - Saving generator...
+2018-01-15 21:29:10,557 - __main__ - INFO - ----------Iteration 2----------
+2018-01-15 21:29:20,213 - __main__ - INFO - Generator loss: 3.39913816706
+2018-01-15 21:29:21,015 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIIFIIDDDDDDXXXX
+2018-01-15 21:29:21,018 - __main__ - INFO - Generated sequence: DAAXIXIIIIIFIFFILIDIDDDDDDXXXA
+2018-01-15 21:29:21,019 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIILFIFIDFKDDDDXXXX
+2018-01-15 21:29:21,021 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFFFILIFDIIKDDDDXXXA
+2018-01-15 21:29:21,022 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIILLIDDDFKDDDDXXXX
+2018-01-15 21:29:21,024 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIILFLFIIKDDDDDXXXA
+2018-01-15 21:29:21,026 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFLLIFFFFIDKDDDXXXA
+2018-01-15 21:29:21,027 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIIFFIFIIIKDDDDXXXA
+2018-01-15 21:29:21,029 - __main__ - INFO - Generated sequence: DAAXIXIIIIIFFFIILFDIDKDDDDXXXX
+2018-01-15 21:29:21,030 - __main__ - INFO - Generated sequence: XAAXIIIIIFFFFLFFLFFIIKDDDDXXXX
+2018-01-15 21:29:21,079 - __main__ - INFO - Saving generator...
+2018-01-15 21:29:21,079 - __main__ - INFO - ----------Iteration 3----------
+2018-01-15 21:29:30,770 - __main__ - INFO - Generator loss: 3.39093912035
+2018-01-15 21:29:31,583 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIILLIIFDDDDDDDXXXA
+2018-01-15 21:29:31,585 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIILLIDIIDDDDDXXXX
+2018-01-15 21:29:31,587 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIFFILLIIDDDDDDDXXXX
+2018-01-15 21:29:31,588 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFLLFIFFDDDDDDDXXXX
+2018-01-15 21:29:31,590 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFFLFIIDFKDDDDXXXX
+2018-01-15 21:29:31,592 - __main__ - INFO - Generated sequence: DAAXIXIIIIFIFLLLFFDIFDDDDDXXXA
+2018-01-15 21:29:31,593 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFILIFIIIIFDDDDDXXXA
+2018-01-15 21:29:31,595 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFLILFDIIKDDDDXXXX
+2018-01-15 21:29:31,596 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFFILIFIDDDDDDDXXXX
+2018-01-15 21:29:31,598 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIFFIIIIDIDDDDDDXXXA
+2018-01-15 21:29:31,645 - __main__ - INFO - Saving generator...
+2018-01-15 21:29:31,646 - __main__ - INFO - ----------Iteration 4----------
+2018-01-15 21:29:41,332 - __main__ - INFO - Generator loss: 3.37810395694
+2018-01-15 21:29:42,134 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFLFIDIDDDDDDXXXX
+2018-01-15 21:29:42,136 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIILLFFIFIKDDDDDXXXX
+2018-01-15 21:29:42,138 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFIFFLFFDIIKDDDDXXXX
+2018-01-15 21:29:42,139 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFILFFIFDIDDDDDDXXXX
+2018-01-15 21:29:42,141 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIILFLIFDKDDDDDXXXA
+2018-01-15 21:29:42,142 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIIFIIIDDKDDDDXXXX
+2018-01-15 21:29:42,144 - __main__ - INFO - Generated sequence: DAAXIXIIIIIIFFFIIFDFFKDDDDXXXA
+2018-01-15 21:29:42,145 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIFLIIFIKDDDDDXXXA
+2018-01-15 21:29:42,147 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIILLLIIDIIKDDDDXXXX
+2018-01-15 21:29:42,148 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIFIFFFIIDDDDDDDXXXA
+2018-01-15 21:29:42,198 - __main__ - INFO - Saving generator...
+2018-01-15 21:29:42,199 - __main__ - INFO - ----------Iteration 5----------
+2018-01-15 21:29:51,944 - __main__ - INFO - Generator loss: 3.39306667451
+2018-01-15 21:29:52,746 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFFFFLLFFFFKDDDDXXXA
+2018-01-15 21:29:52,747 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIFILIFDIKKKDDDXXXX
+2018-01-15 21:29:52,749 - __main__ - INFO - Generated sequence: DAAXIXIIIIIFFLILFIIFDKDDDDXXXX
+2018-01-15 21:29:52,750 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFFFIIDFKDDDDXXXX
+2018-01-15 21:29:52,752 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFILFFFDIDDDDDXXXX
+2018-01-15 21:29:52,754 - __main__ - INFO - Generated sequence: DAAXIXIIIIFFIFFIIIDDDDDDDDXXXA
+2018-01-15 21:29:52,756 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIIFLFFDIDDDDDDXXXA
+2018-01-15 21:29:52,757 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIFILIFIDDIDDDDDXXXA
+2018-01-15 21:29:52,759 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIFFFFIIFDDDDDXXXX
+2018-01-15 21:29:52,760 - __main__ - INFO - Generated sequence: DAAXIXIIIFFIFLFILFIIIKDDDDXXXX
+2018-01-15 21:29:52,805 - __main__ - INFO - Saving generator...
+2018-01-15 21:29:52,806 - __main__ - INFO - ----------Iteration 6----------
+2018-01-15 21:30:02,497 - __main__ - INFO - Generator loss: 3.37374974129
+2018-01-15 21:30:03,296 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFLILFIDIFDDDDDXXXA
+2018-01-15 21:30:03,297 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFIIFFFIDDDDDXXXX
+2018-01-15 21:30:03,299 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFFFFFFIKDDDDXXXX
+2018-01-15 21:30:03,300 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFILFFIDKDDDDDXXXA
+2018-01-15 21:30:03,302 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFFILIIIFDDDDDXXXA
+2018-01-15 21:30:03,304 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFILLFIFDFIDDDDDXXXA
+2018-01-15 21:30:03,305 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFLLIIDDKKDDDXXXX
+2018-01-15 21:30:03,307 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIIILLIDFDDDDDDXXXX
+2018-01-15 21:30:03,309 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFILLFFDDIKDDDDXXXA
+2018-01-15 21:30:03,310 - __main__ - INFO - Generated sequence: DAAXIXIIIIFIIIFLFIIDKDDDDDXXXA
+2018-01-15 21:30:03,357 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:03,358 - __main__ - INFO - ----------Iteration 7----------
+2018-01-15 21:30:13,085 - __main__ - INFO - Generator loss: 3.3599889046
+2018-01-15 21:30:13,899 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFFIIIIIFFFDDDDDXXXX
+2018-01-15 21:30:13,901 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFFFILIDFDDDDDDXXXX
+2018-01-15 21:30:13,903 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFIIFFDDDDDDDDXXXX
+2018-01-15 21:30:13,905 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFLFLFIDDKDDDDXXXA
+2018-01-15 21:30:13,906 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIIIIDIDKDDDDXXXX
+2018-01-15 21:30:13,908 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFILIFIFIDKDDDDXXXX
+2018-01-15 21:30:13,909 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFLIFLFIFIDDDDDXXXA
+2018-01-15 21:30:13,911 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFFLFDDKDDDDDXXXX
+2018-01-15 21:30:13,912 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFLIFIIIFKDDDDXXXA
+2018-01-15 21:30:13,914 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFIFILIIFFDDDDDXXXA
+2018-01-15 21:30:13,961 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:13,961 - __main__ - INFO - ----------Iteration 8----------
+2018-01-15 21:30:23,649 - __main__ - INFO - Generator loss: 3.33574920049
+2018-01-15 21:30:24,456 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFIFIFIFFIKDDDDXXXA
+2018-01-15 21:30:24,458 - __main__ - INFO - Generated sequence: DAAXIXIIIIFFIILIIFDIDDDDDDXXXA
+2018-01-15 21:30:24,460 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIFLFIFDDDDDDXXXX
+2018-01-15 21:30:24,461 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFIIFFLIIIIDDDDDXXXX
+2018-01-15 21:30:24,462 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFLFFIDIFKDDDDXXXA
+2018-01-15 21:30:24,464 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIFIFIDFIDDDDDXXXA
+2018-01-15 21:30:24,465 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIFIIDKDDDDXXXX
+2018-01-15 21:30:24,467 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFLFLIIIDDDDDDXXXX
+2018-01-15 21:30:24,469 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFFFIDDIKDDDDXXXX
+2018-01-15 21:30:24,470 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIIFFIFFDIDDDDDXXXX
+2018-01-15 21:30:24,522 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:24,523 - __main__ - INFO - ----------Iteration 9----------
+2018-01-15 21:30:34,222 - __main__ - INFO - Generator loss: 3.33618355027
+2018-01-15 21:30:35,037 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIFIIFFDDDDDDDDXXXX
+2018-01-15 21:30:35,039 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFFFIFDDKKDDDDXXXX
+2018-01-15 21:30:35,041 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFLFLIIDDDDDDDXXXX
+2018-01-15 21:30:35,042 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFFFFIDFFDDDDDXXXA
+2018-01-15 21:30:35,044 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIILILFIIIIKDDDDXXXX
+2018-01-15 21:30:35,046 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIFILIIIIIDDDDDXXXX
+2018-01-15 21:30:35,047 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIFIFFDDDDDDDXXXX
+2018-01-15 21:30:35,049 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIILILIFIIDDDDDXXXA
+2018-01-15 21:30:35,051 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFILFIIFFFKKDDDDXXXX
+2018-01-15 21:30:35,052 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIFIFIIFDDIKDDDDXXXX
+2018-01-15 21:30:35,103 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:35,103 - __main__ - INFO - ----------Iteration 10----------
+2018-01-15 21:30:44,804 - __main__ - INFO - Generator loss: 3.3197080892
+2018-01-15 21:30:45,607 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIFFILIIIIDDDDDXXXX
+2018-01-15 21:30:45,608 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIFFLLFIIDIKDDDDXXXX
+2018-01-15 21:30:45,610 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIIIIIFDIDDDDDDXXXX
+2018-01-15 21:30:45,611 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIIIFFDDDKDDDDXXXA
+2018-01-15 21:30:45,613 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFIFIIIDFDDDDDDXXXX
+2018-01-15 21:30:45,614 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIIFFFFDDKDDDDXXXX
+2018-01-15 21:30:45,616 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIFIIFIIDDDDDDDXXXX
+2018-01-15 21:30:45,618 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFLIFIFDDDDDXXXX
+2018-01-15 21:30:45,619 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFLFFIIDKDDDDXXXA
+2018-01-15 21:30:45,621 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIFFIIFDDDKDDDDXXXX
+2018-01-15 21:30:45,667 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:45,667 - __main__ - INFO - ----------Iteration 11----------
+2018-01-15 21:30:55,544 - __main__ - INFO - Generator loss: 3.29497400145
+2018-01-15 21:30:56,346 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFILFDIIKDDDDXXXX
+2018-01-15 21:30:56,347 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFFIIIFIDKDDDDDXXXA
+2018-01-15 21:30:56,349 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFFIFLFFFIIKDDDDXXXA
+2018-01-15 21:30:56,351 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFFIFLIFDIDDDDDDXXXX
+2018-01-15 21:30:56,353 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIFIFIIDIDKDDDDXXXX
+2018-01-15 21:30:56,357 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIILIDIIKDDDDXXXX
+2018-01-15 21:30:56,358 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIILIFFIDDDKDDDDXXXX
+2018-01-15 21:30:56,360 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFILIIIIFIIDDDDDXXXX
+2018-01-15 21:30:56,362 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIFLFLFIFDDDDDDXXXX
+2018-01-15 21:30:56,364 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFLFFFIFFDDDDDXXXX
+2018-01-15 21:30:56,413 - __main__ - INFO - Saving generator...
+2018-01-15 21:30:56,415 - __main__ - INFO - ----------Iteration 12----------
+2018-01-15 21:31:06,094 - __main__ - INFO - Generator loss: 3.27628152063
+2018-01-15 21:31:06,902 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIIIFIFFIDDDDDXXXX
+2018-01-15 21:31:06,904 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIILFFLFDIDDDDDDXXXX
+2018-01-15 21:31:06,906 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFILFFDDIDDDDDXXXX
+2018-01-15 21:31:06,908 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIFFFIIDDDDDDDXXXX
+2018-01-15 21:31:06,910 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIIIIIFDDDDDDXXXA
+2018-01-15 21:31:06,913 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIFIFFIIIKDDDDXXXX
+2018-01-15 21:31:06,915 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFFIFIIFIIDDDDDXXXX
+2018-01-15 21:31:06,917 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIILIIFIIIDDDDDDXXXX
+2018-01-15 21:31:06,918 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIIFIIIIIDDDDDXXXA
+2018-01-15 21:31:06,921 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIIIFFFFFDDDDDDXXXA
+2018-01-15 21:31:06,971 - __main__ - INFO - Saving generator...
+2018-01-15 21:31:06,973 - __main__ - INFO - ----------Iteration 13----------
+2018-01-15 21:31:16,655 - __main__ - INFO - Generator loss: 3.2723794102
+2018-01-15 21:31:17,460 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFFIFFFDDIDDDDDXXXA
+2018-01-15 21:31:17,462 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFFIIIIIDDFDDDDDXXXX
+2018-01-15 21:31:17,464 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIILLIIFDIKDDDDDXXXX
+2018-01-15 21:31:17,465 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFFIIFLFIDIKDDDDXXXX
+2018-01-15 21:31:17,467 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIILLLIIIDDDDDDXXXX
+2018-01-15 21:31:17,471 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFFIIIIFIIIDDDDDXXXX
+2018-01-15 21:31:17,473 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFILIIFDKKDDDDXXXX
+2018-01-15 21:31:17,475 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIFIIFIFDDDDDDDXXXX
+2018-01-15 21:31:17,477 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIIIIIFIDDDDDXXXA
+2018-01-15 21:31:17,480 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIIFFIDIDDDDDDXXXX
+2018-01-15 21:31:17,529 - __main__ - INFO - Saving generator...
+2018-01-15 21:31:17,530 - __main__ - INFO - ----------Iteration 14----------
+2018-01-15 21:31:27,202 - __main__ - INFO - Generator loss: 3.23360555974
+2018-01-15 21:31:28,012 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFIIFFDIDDDDDDXXXX
+2018-01-15 21:31:28,014 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIIIIIIDDKDDDDXXXA
+2018-01-15 21:31:28,015 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIFFIIDIFDDDDDXXXA
+2018-01-15 21:31:28,017 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIILILFIDIDDDDDXXXA
+2018-01-15 21:31:28,019 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIFLIIIDDDDDDXXXX
+2018-01-15 21:31:28,023 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIIIFIIDDDDDDXXXX
+2018-01-15 21:31:28,025 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFILFIIFIDDDDDXXXX
+2018-01-15 21:31:28,027 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIILLFIIIDKDDDDXXXX
+2018-01-15 21:31:28,029 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFLIIFFDIKDDDDXXXX
+2018-01-15 21:31:28,030 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIFFFIFIDIDDDDDXXXA
+2018-01-15 21:31:28,080 - __main__ - INFO - Saving generator...
+2018-01-15 21:31:28,082 - __main__ - INFO - ----------Iteration 15----------
+2018-01-15 21:31:37,903 - __main__ - INFO - Generator loss: 3.21910901573
+2018-01-15 21:31:38,711 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIDIDDDDDDXXXX
+2018-01-15 21:31:38,713 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFIILIFFIKDDDDXXXX
+2018-01-15 21:31:38,715 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFLIFDFDDDDDDXXXX
+2018-01-15 21:31:38,717 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIIFIFIIDDDDDDXXXX
+2018-01-15 21:31:38,718 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFFIIDFIDDDDDXXXX
+2018-01-15 21:31:38,723 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFIFIIIFIDDDDDXXXA
+2018-01-15 21:31:38,725 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFLFIIIIDDDDDXXXX
+2018-01-15 21:31:38,727 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIFIFIFIDIDDDDDXXXX
+2018-01-15 21:31:38,729 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIILIFFDDDDDDDXXXX
+2018-01-15 21:31:38,732 - __main__ - INFO - Generated sequence: DAAXIIIIIFFIIIFFFFIIIDDDDDXXXX
+2018-01-15 21:31:38,783 - __main__ - INFO - Saving generator...
+2018-01-15 21:31:38,785 - __main__ - INFO - ----------Iteration 16----------
+2018-01-15 21:31:48,557 - __main__ - INFO - Generator loss: 3.18453153108
+2018-01-15 21:31:49,375 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFIIIDFIKDDDDXXXX
+2018-01-15 21:31:49,377 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIIIFIDIDDDDDXXXX
+2018-01-15 21:31:49,379 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIIFIFDIKDDDDXXXX
+2018-01-15 21:31:49,381 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFIIFIIFDDDDDDXXXX
+2018-01-15 21:31:49,383 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIFIIFIDIIDDDDDXXXX
+2018-01-15 21:31:49,386 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFFIFIIIDDDDDDXXXX
+2018-01-15 21:31:49,387 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFFLFIFDDDDDDXXXA
+2018-01-15 21:31:49,390 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIIIFIFFDDDDDDXXXX
+2018-01-15 21:31:49,392 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIFFFDDDDDDXXXA
+2018-01-15 21:31:49,393 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIIFFDDDDDDDXXXX
+2018-01-15 21:31:49,443 - __main__ - INFO - Saving generator...
+2018-01-15 21:31:49,445 - __main__ - INFO - ----------Iteration 17----------
+2018-01-15 21:31:59,191 - __main__ - INFO - Generator loss: 3.14794725928
+2018-01-15 21:31:59,999 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFFFFIIDDDDDDXXXX
+2018-01-15 21:32:00,002 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFFIFIIFDIDDDDDXXXX
+2018-01-15 21:32:00,004 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFIIFIIDDDDDXXXX
+2018-01-15 21:32:00,007 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFIFIFFDFIDDDDDXXXX
+2018-01-15 21:32:00,010 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFILIFFIFIDDDDDXXXX
+2018-01-15 21:32:00,012 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFFIIFIFIDDDDDXXXX
+2018-01-15 21:32:00,015 - __main__ - INFO - Generated sequence: DAAXIIIIIFFFIIIIFIFFIDDDDDXXXX
+2018-01-15 21:32:00,016 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIIIIFFIIDDDDDXXXX
+2018-01-15 21:32:00,018 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIIFFIFDDDDDDDXXXX
+2018-01-15 21:32:00,021 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFIFIFIFIDDDDDDXXXX
+2018-01-15 21:32:00,068 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:00,070 - __main__ - INFO - ----------Iteration 18----------
+2018-01-15 21:32:09,778 - __main__ - INFO - Generator loss: 3.11008249293
+2018-01-15 21:32:10,578 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIFIFIFIIDDDDDXXXX
+2018-01-15 21:32:10,580 - __main__ - INFO - Generated sequence: DAAXIIIIIFIIIIIIFIFIIDDDDDXXXX
+2018-01-15 21:32:10,581 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:32:10,583 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIFDDDDDDXXXA
+2018-01-15 21:32:10,585 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFIIIIFIDDDDDDXXXX
+2018-01-15 21:32:10,588 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFFIFIDIDDDDDXXXX
+2018-01-15 21:32:10,591 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFIIIFFFIIDDDDDDXXXX
+2018-01-15 21:32:10,593 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFIIFFIIIDDDDDXXXX
+2018-01-15 21:32:10,594 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIFFIIIFIIDDDDDXXXX
+2018-01-15 21:32:10,596 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIDIDDDDDXXXX
+2018-01-15 21:32:10,645 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:10,646 - __main__ - INFO - ----------Iteration 19----------
+2018-01-15 21:32:20,559 - __main__ - INFO - Generator loss: 3.07051066094
+2018-01-15 21:32:21,363 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFIFIFDDDDDDDXXXX
+2018-01-15 21:32:21,365 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFFFDDDDDDDDXXXX
+2018-01-15 21:32:21,366 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFIIIDIDDDDDDXXXX
+2018-01-15 21:32:21,368 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIIIDIIDDDDDXXXX
+2018-01-15 21:32:21,370 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIFFIFIIIDIDDDDDXXXX
+2018-01-15 21:32:21,374 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIFIFIDDDDDXXXX
+2018-01-15 21:32:21,376 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIIFIIIIDDDDDXXXX
+2018-01-15 21:32:21,377 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFFIIFFIIDDDDDDXXXX
+2018-01-15 21:32:21,379 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIFIFIIDKDDDDXXXX
+2018-01-15 21:32:21,381 - __main__ - INFO - Generated sequence: DAAXIIIIIFIFIFIIIIIIDDDDDDXXXX
+2018-01-15 21:32:21,431 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:21,432 - __main__ - INFO - ----------Iteration 20----------
+2018-01-15 21:32:31,202 - __main__ - INFO - Generator loss: 3.04021009125
+2018-01-15 21:32:31,999 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIDDDDDDXXXX
+2018-01-15 21:32:32,000 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:32:32,002 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFFFFIIDIDDDDDXXXX
+2018-01-15 21:32:32,004 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:32:32,006 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIIFIIIDDDDDDDXXXX
+2018-01-15 21:32:32,010 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFFIIFDIDDDDDXXXX
+2018-01-15 21:32:32,012 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIFIIDDDDDXXXX
+2018-01-15 21:32:32,014 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIFIFIFIDDDDDXXXX
+2018-01-15 21:32:32,015 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIFIIIDDDDDXXXX
+2018-01-15 21:32:32,017 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFFFFFIIIDDDDDXXXX
+2018-01-15 21:32:32,063 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:32,065 - __main__ - INFO - ----------Iteration 21----------
+2018-01-15 21:32:41,736 - __main__ - INFO - Generator loss: 2.97623556166
+2018-01-15 21:32:42,543 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFIFFIIDDDDDXXXX
+2018-01-15 21:32:42,544 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIFIIIIIDDDDDXXXA
+2018-01-15 21:32:42,546 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIIIIIIDDDDDXXXX
+2018-01-15 21:32:42,548 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIFIIIDDDDDDXXXX
+2018-01-15 21:32:42,550 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIDDDDDDXXXX
+2018-01-15 21:32:42,553 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIFIIFIIIDDDDDXXXA
+2018-01-15 21:32:42,555 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIFIIIFIDDDDDXXXX
+2018-01-15 21:32:42,558 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFIIIIIIIDDDDDXXXX
+2018-01-15 21:32:42,559 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:32:42,563 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIFDIIDDDDDXXXX
+2018-01-15 21:32:42,610 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:42,611 - __main__ - INFO - ----------Iteration 22----------
+2018-01-15 21:32:52,312 - __main__ - INFO - Generator loss: 2.93142931145
+2018-01-15 21:32:53,110 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:32:53,112 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:32:53,114 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIDDDDDDXXXX
+2018-01-15 21:32:53,116 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFIIIIDIDDDDDXXXX
+2018-01-15 21:32:53,117 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIFFIFIIIDDDDDXXXX
+2018-01-15 21:32:53,121 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIFIFIIIIDDDDDXXXX
+2018-01-15 21:32:53,122 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFIIIIIIDDDDDXXXX
+2018-01-15 21:32:53,125 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFFIIIIDIDDDDDXXXX
+2018-01-15 21:32:53,127 - __main__ - INFO - Generated sequence: DAAXIIIIIIFFFFIIIFIFIDDDDDXXXX
+2018-01-15 21:32:53,128 - __main__ - INFO - Generated sequence: DAAXIIIIIIFIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:32:53,176 - __main__ - INFO - Saving generator...
+2018-01-15 21:32:53,178 - __main__ - INFO - ----------Iteration 23----------
+2018-01-15 21:33:02,877 - __main__ - INFO - Generator loss: 2.87324004808
+2018-01-15 21:33:03,687 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIFIDDDDDDXXXX
+2018-01-15 21:33:03,688 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIFIIIDDDDDDXXXX
+2018-01-15 21:33:03,690 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIIIFIIDDDDDDXXXX
+2018-01-15 21:33:03,692 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIFIDDDDDXXXX
+2018-01-15 21:33:03,693 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:33:03,695 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIIIIIIDDDDDDXXXX
+2018-01-15 21:33:03,696 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFFFIIFIIIDDDDDDXXXX
+2018-01-15 21:33:03,698 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIDIDDDDDXXXX
+2018-01-15 21:33:03,700 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFIFIIIIIKDDDDXXXX
+2018-01-15 21:33:03,701 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:03,749 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:03,750 - __main__ - INFO - ----------Iteration 24----------
+2018-01-15 21:33:13,450 - __main__ - INFO - Generator loss: 2.81062010651
+2018-01-15 21:33:14,257 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:33:14,260 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIFIDIDDDDDXXXX
+2018-01-15 21:33:14,261 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIFIIFIIDDDDDXXXX
+2018-01-15 21:33:14,263 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIDDDDDDXXXX
+2018-01-15 21:33:14,264 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIFIFIIIDDDDDXXXX
+2018-01-15 21:33:14,266 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIFIFIFIIIDDDDDXXXX
+2018-01-15 21:33:14,267 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFFIIIIDDDDDXXXX
+2018-01-15 21:33:14,269 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFFIIIIDDDDDXXXX
+2018-01-15 21:33:14,270 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIIIIIIIDDDDDDXXXX
+2018-01-15 21:33:14,272 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:33:14,320 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:14,320 - __main__ - INFO - ----------Iteration 25----------
+2018-01-15 21:33:24,030 - __main__ - INFO - Generator loss: 2.78092483761
+2018-01-15 21:33:24,835 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:24,836 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:33:24,838 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:33:24,839 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:24,841 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIKDDDDXXXX
+2018-01-15 21:33:24,843 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:33:24,844 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:33:24,846 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFFFIIIDDDDDXXXX
+2018-01-15 21:33:24,848 - __main__ - INFO - Generated sequence: DAAXIIIIIIIFIIIIFIIIIDDDDDXXXX
+2018-01-15 21:33:24,849 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIFIIDDDDDDXXXX
+2018-01-15 21:33:24,899 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:24,900 - __main__ - INFO - ----------Iteration 26----------
+2018-01-15 21:33:34,762 - __main__ - INFO - Generator loss: 2.71872563234
+2018-01-15 21:33:35,583 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:33:35,585 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIFIFIIIIIIDDDDDXXXX
+2018-01-15 21:33:35,587 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFFIIIIDDDDDXXXX
+2018-01-15 21:33:35,588 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFFIIIDDDDDXXXX
+2018-01-15 21:33:35,590 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIFIFIDDDDDDXXXX
+2018-01-15 21:33:35,591 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:35,593 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFIFIIIIDDDDDXXXX
+2018-01-15 21:33:35,595 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:35,597 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:33:35,598 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:33:35,653 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:35,654 - __main__ - INFO - ----------Iteration 27----------
+2018-01-15 21:33:45,375 - __main__ - INFO - Generator loss: 2.66935542249
+2018-01-15 21:33:46,167 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIDIDDDDDXXXX
+2018-01-15 21:33:46,169 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIFIDIDDDDDXXXX
+2018-01-15 21:33:46,170 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIDDDDDDXXXX
+2018-01-15 21:33:46,172 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:33:46,173 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFFIIIIIDDDDDXXXX
+2018-01-15 21:33:46,175 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:33:46,177 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIIFIIIIDDDDDXXXX
+2018-01-15 21:33:46,179 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIFIIIDDDDDXXXX
+2018-01-15 21:33:46,181 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFFIIIIDDDDDXXXX
+2018-01-15 21:33:46,183 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIFFIIIDDDDDXXXX
+2018-01-15 21:33:46,231 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:46,232 - __main__ - INFO - ----------Iteration 28----------
+2018-01-15 21:33:56,045 - __main__ - INFO - Generator loss: 2.6345324983
+2018-01-15 21:33:56,830 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:33:56,832 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:33:56,833 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIDIDDDDDXXXX
+2018-01-15 21:33:56,835 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFFFIIIDDDDDXXXX
+2018-01-15 21:33:56,837 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:33:56,838 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:33:56,840 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:33:56,841 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFIFFIIIIDDDDDXXXX
+2018-01-15 21:33:56,843 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:33:56,845 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIFIFIIIIDDDDDXXXX
+2018-01-15 21:33:56,892 - __main__ - INFO - Saving generator...
+2018-01-15 21:33:56,892 - __main__ - INFO - ----------Iteration 29----------
+2018-01-15 21:34:06,585 - __main__ - INFO - Generator loss: 2.57259190776
+2018-01-15 21:34:07,457 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:07,461 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:07,463 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:34:07,465 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:34:07,467 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIFIDDDDDXXXX
+2018-01-15 21:34:07,470 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:34:07,471 - __main__ - INFO - Generated sequence: DAAXIIIIIIIIIFFIFIIIIDDDDDXXXX
+2018-01-15 21:34:07,473 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:07,475 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXA
+2018-01-15 21:34:07,477 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:34:07,536 - __main__ - INFO - Saving generator...
+2018-01-15 21:34:07,536 - __main__ - INFO - ----------Iteration 30----------
+2018-01-15 21:34:17,247 - __main__ - INFO - Generator loss: 2.53397576827
+2018-01-15 21:34:18,044 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIFIIDIDDDDDXXXX
+2018-01-15 21:34:18,046 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIKDDDDXXXX
+2018-01-15 21:34:18,048 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIFFIIIIIDDDDDXXXX
+2018-01-15 21:34:18,049 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:34:18,051 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIKDDDDXXXX
+2018-01-15 21:34:18,052 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:18,054 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:18,055 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIILIIIIDDDDDXXXX
+2018-01-15 21:34:18,057 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIFIIIIIDDDDDXXXX
+2018-01-15 21:34:18,058 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:34:18,109 - __main__ - INFO - Saving generator...
+2018-01-15 21:34:18,110 - __main__ - INFO - ----------Iteration 31----------
+2018-01-15 21:34:27,876 - __main__ - INFO - Generator loss: 2.49012389548
+2018-01-15 21:34:28,674 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,676 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,678 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,680 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,681 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,683 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:34:28,684 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIDDDDDDXXXX
+2018-01-15 21:34:28,686 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,688 - __main__ - INFO - Generated sequence: AAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,689 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:28,736 - __main__ - INFO - Saving generator...
+2018-01-15 21:34:28,736 - __main__ - INFO - ----------Iteration 32----------
+2018-01-15 21:34:38,558 - __main__ - INFO - Generator loss: 0.039420880201
+2018-01-15 21:34:39,362 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIFIIIIDDDDDXXXX
+2018-01-15 21:34:39,364 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:34:39,365 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:39,367 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:39,368 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:34:39,370 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:39,371 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIFIIIDDDDDXXXX
+2018-01-15 21:34:39,373 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIFIFIIIDDDDDXXXX
+2018-01-15 21:34:39,374 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:39,376 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:34:39,422 - __main__ - INFO - Saving generator...
+2018-01-15 21:34:39,422 - __main__ - INFO - ----------Iteration 33----------
+2018-01-15 21:35:01,358 - __main__ - INFO - Discriminator loss: 0.0690103901936
+2018-01-15 21:35:10,131 - __main__ - INFO - Generator loss: 6.79367736464
+2018-01-15 21:35:10,933 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,935 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,937 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,938 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,940 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,941 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,943 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIILIIIIIDDDDDXXXX
+2018-01-15 21:35:10,944 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,946 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIFIIFIDDDDDXXXX
+2018-01-15 21:35:10,948 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIFIIIIIIDDDDDXXXX
+2018-01-15 21:35:10,992 - __main__ - INFO - Saving generator...
+2018-01-15 21:35:10,993 - __main__ - INFO - ----------Iteration 34----------
+2018-01-15 21:35:20,540 - __main__ - INFO - Generator loss: 6.78909211995
+2018-01-15 21:35:21,335 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,337 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIILFFIIIDDDDDXXXX
+2018-01-15 21:35:21,338 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,340 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,341 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,343 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,344 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,346 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,347 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,349 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:21,393 - __main__ - INFO - Saving generator...
+2018-01-15 21:35:21,394 - __main__ - INFO - ----------Iteration 35----------
+2018-01-15 21:35:31,026 - __main__ - INFO - Generator loss: 6.80245613813
+2018-01-15 21:35:31,824 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,826 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIILIIIIDDDDDXXXX
+2018-01-15 21:35:31,828 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,829 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,831 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,833 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,835 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,836 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIITIIIIDDDDDXXXX
+2018-01-15 21:35:31,838 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,839 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:31,884 - __main__ - INFO - Saving generator...
+2018-01-15 21:35:31,885 - __main__ - INFO - ----------Iteration 36----------
+2018-01-15 21:35:41,504 - __main__ - INFO - Generator loss: 6.77986673538
+2018-01-15 21:35:42,301 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,303 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,304 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,306 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,307 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIFIDDDDDXXXX
+2018-01-15 21:35:42,309 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,311 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,312 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,314 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,315 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:42,364 - __main__ - INFO - Saving generator...
+2018-01-15 21:35:42,364 - __main__ - INFO - ----------Iteration 37----------
+2018-01-15 21:35:51,945 - __main__ - INFO - Generator loss: 6.78998440545
+2018-01-15 21:35:52,752 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,753 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,755 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,757 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,758 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:35:52,762 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,764 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,766 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,768 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,770 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:35:52,815 - __main__ - INFO - Saving generator...
+2018-01-15 21:35:52,817 - __main__ - INFO - ----------Iteration 38----------
+2018-01-15 21:36:02,375 - __main__ - INFO - Generator loss: 6.78115648062
+2018-01-15 21:36:03,162 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:03,164 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,166 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,168 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:03,170 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,173 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,175 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,176 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,178 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,180 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:03,227 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:03,229 - __main__ - INFO - ----------Iteration 39----------
+2018-01-15 21:36:12,751 - __main__ - INFO - Generator loss: 6.7808784465
+2018-01-15 21:36:13,560 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIILIIIIDDDDDXXXL
+2018-01-15 21:36:13,562 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,563 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,566 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,567 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,571 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,573 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,574 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXX
+2018-01-15 21:36:13,576 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIITIIIIDDDDDXXXX
+2018-01-15 21:36:13,578 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIFIDDDDDXXXL
+2018-01-15 21:36:13,626 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:13,628 - __main__ - INFO - ----------Iteration 40----------
+2018-01-15 21:36:23,157 - __main__ - INFO - Generator loss: 6.79284804459
+2018-01-15 21:36:23,961 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,963 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,965 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,967 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,969 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,970 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,972 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIITIIIIIDDDDDXXXX
+2018-01-15 21:36:23,973 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:23,975 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIITIIIDDDDDXXXL
+2018-01-15 21:36:23,976 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIFIDDDDDXXXX
+2018-01-15 21:36:24,024 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:24,024 - __main__ - INFO - ----------Iteration 41----------
+2018-01-15 21:36:33,678 - __main__ - INFO - Generator loss: 6.78815592564
+2018-01-15 21:36:34,479 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,481 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,483 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,485 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,487 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIILIIIIIDDDDDXXXL
+2018-01-15 21:36:34,490 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,492 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,494 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,496 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,501 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:34,548 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:34,550 - __main__ - INFO - ----------Iteration 42----------
+2018-01-15 21:36:44,153 - __main__ - INFO - Generator loss: 6.77029634507
+2018-01-15 21:36:44,950 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,952 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,954 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,956 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,958 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,962 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,963 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,965 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,967 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:44,969 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIITIIIIIDDDDDXXXL
+2018-01-15 21:36:45,016 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:45,018 - __main__ - INFO - ----------Iteration 43----------
+2018-01-15 21:36:54,609 - __main__ - INFO - Generator loss: 6.77774718656
+2018-01-15 21:36:55,396 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,398 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,399 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIDDDDDDXXXL
+2018-01-15 21:36:55,401 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,403 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,407 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,408 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,410 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,412 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,413 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:36:55,462 - __main__ - INFO - Saving generator...
+2018-01-15 21:36:55,464 - __main__ - INFO - ----------Iteration 44----------
+2018-01-15 21:37:05,042 - __main__ - INFO - Generator loss: 6.76666826729
+2018-01-15 21:37:05,836 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,838 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,839 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,841 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,843 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,847 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,848 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,850 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,852 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,854 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:05,902 - __main__ - INFO - Saving generator...
+2018-01-15 21:37:05,903 - __main__ - INFO - ----------Iteration 45----------
+2018-01-15 21:37:15,493 - __main__ - INFO - Generator loss: 6.74814061204
+2018-01-15 21:37:16,292 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,294 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,296 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,297 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,299 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,303 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,305 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIDDDDDDXXXL
+2018-01-15 21:37:16,307 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,309 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,310 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:16,358 - __main__ - INFO - Saving generator...
+2018-01-15 21:37:16,359 - __main__ - INFO - ----------Iteration 46----------
+2018-01-15 21:37:25,955 - __main__ - INFO - Generator loss: 6.74078639406
+2018-01-15 21:37:26,754 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,756 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,758 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,759 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,761 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIILIIIIDDDDDXXXL
+2018-01-15 21:37:26,765 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIILIIIIDDDDDXXXL
+2018-01-15 21:37:26,767 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,769 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,770 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,772 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:26,822 - __main__ - INFO - Saving generator...
+2018-01-15 21:37:26,824 - __main__ - INFO - ----------Iteration 47----------
+2018-01-15 21:37:36,387 - __main__ - INFO - Generator loss: 6.77567545056
+2018-01-15 21:37:37,182 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIITIIIDDDDDDXXXL
+2018-01-15 21:37:37,184 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,186 - __main__ - INFO - Generated sequence: PAAXIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,188 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,190 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,193 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,195 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,197 - __main__ - INFO - Generated sequence: AAAAIIIIIIIIIIILIIIIIDDDDDXXXL
+2018-01-15 21:37:37,198 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIIIIIIIDDDDDXXXL
+2018-01-15 21:37:37,201 - __main__ - INFO - Generated sequence: PAAAIIIIIIIIIIIITIIIIDDDDDXXXL
+2018-01-15 21:37:37,247 - __main__ - INFO - Saving generator...
+2018-01-15 21:37:37,248 - __main__ - INFO - ----------Iteration 48----------
+2018-01-15 21:38:31,804 - scripts.load_data - INFO - Loaded 159550 samples
+2018-01-15 21:38:39,908 - scripts.load_data - INFO - Dataset is 402.066 mb in memory
+2018-01-15 21:38:39,909 - scripts.load_data - INFO - 18764 positive samples and 140786 negative samples
+2018-01-15 21:38:39,909 - scripts.load_data - INFO - It took 18.30129 seconds to load
+2018-01-15 21:38:55,150 - scripts.load_data - INFO - Loaded 159550 samples
+2018-01-15 21:39:03,201 - scripts.load_data - INFO - Dataset is 402.066 mb in memory
+2018-01-15 21:39:03,202 - scripts.load_data - INFO - 18764 positive samples and 140786 negative samples
+2018-01-15 21:39:03,202 - scripts.load_data - INFO - It took 18.15961 seconds to load
+2018-01-15 21:52:00,079 - scripts.load_data - INFO - Loaded 81920 samples
+2018-01-15 21:52:04,152 - scripts.load_data - INFO - Dataset is 206.4384 mb in memory
+2018-01-15 21:52:04,152 - scripts.load_data - INFO - 10754 positive samples and 71166 negative samples
+2018-01-15 21:52:04,152 - scripts.load_data - INFO - It took 9.33109 seconds to load
+2018-01-15 22:00:57,188 - scripts.load_data - INFO - Loaded 2357 samples
+2018-01-15 22:00:57,287 - scripts.load_data - INFO - Dataset is 5.93964 mb in memory
+2018-01-15 22:00:57,287 - scripts.load_data - INFO - 1275 positive samples and 1082 negative samples
+2018-01-15 22:00:57,287 - scripts.load_data - INFO - It took 0.26475 seconds to load
+2018-01-15 22:07:50,569 - scripts.load_data - INFO - Loaded 292 samples
+2018-01-15 22:07:50,584 - scripts.load_data - INFO - Dataset is 0.73584 mb in memory
+2018-01-15 22:07:50,584 - scripts.load_data - INFO - 45 positive samples and 247 negative samples
+2018-01-15 22:07:50,585 - scripts.load_data - INFO - It took 0.09126 seconds to load
