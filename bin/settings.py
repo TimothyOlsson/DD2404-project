@@ -50,5 +50,5 @@ GAN_limit_samples = None  # OBS: Depends on first limit samples
 #endregion
 
 #region Query
-query_data_folder = '../data/query_data/tm'
+query_data_folder = '../data/query_data/'
 #endregion
