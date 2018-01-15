@@ -507,7 +507,11 @@ confusion_matrix[0][0] = TP
 confusion_matrix[1][1] = TN
 confusion_matrix[1][0] = FP
 confusion_matrix[0][1] = FN
-confusion_matrix_normalized = confusion_matrix/Y_test.shape[0]  # Total number of samples
+confusion_matrix_normalized = np.array([[0, 0], [0, 0]], dtype='float32')
+confusion_matrix_normalized[0][0] = TP/(TP + FN)
+confusion_matrix_normalized[1][1] = TN/(FP + TN)
+confusion_matrix_normalized[1][0] = FP/(FP + TN)
+confusion_matrix_normalized[0][1] = FN/(TP + FN)
 plt.figure()
 plt.axis('off')
 plt.title('Confusion matrix normalized')
@@ -609,19 +613,23 @@ logger.info('Accuracy: ' + str(round(accuracy_score, 4))
 # https://graphviz.gitlab.io/download/ needs this
 # and installing pydot-ng and graphviz
 # NOTE: if you use linux, the path needs to be changed to correct path
-from keras.utils import plot_model
-import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
-plot_model(model, to_file='results/model.png')
-plt.figure()
-img=plt.imread('results/model.png')
-imgplot = plt.imshow(img)
-plt.tight_layout()
-plt.axis('off')
-if plot_performance:
-    plt.show(block=False)
-else:
-    plt.clf()
+try:
+    from keras.utils import plot_model
+    import os
+    os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
+    plot_model(model, to_file='results/model.png')
+    plt.figure()
+    img=plt.imread('results/model.png')
+    imgplot = plt.imshow(img)
+    plt.tight_layout()
+    plt.axis('off')
+    if plot_performance:
+        plt.show(block=False)
+    else:
+        plt.clf()
+except Exception as e:
+    print('Error, cannot visualize model')
+    print(e)
 #endregion
 
 #region Filters
@@ -668,8 +676,12 @@ if train_GAN:
     logger.info('Creating generator...')
     # Remember: output = kernel - input + 1
     generator = Sequential()
-    generator.add(Convolution1D(128, 20, input_shape=(30, 21)))
-    generator.add(LSTM(64))
+    generator.add(Convolution1D(512, 20, input_shape=(30, 21), activation='relu'))
+    generator.add(BatchNormalization())
+    generator.add(Convolution1D(512, 11, activation='relu'))
+    generator.add(BatchNormalization())
+    generator.add(Convolution1D(512, 1, activation='relu'))
+    generator.add(Flatten())
     generator.add(Dense(630, activation='sigmoid'))
     generator.add(Reshape((30,21)))
     logger.info(generator.summary(print_fn=lambda txt: logger.info(txt)))
