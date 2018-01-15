@@ -19,6 +19,8 @@ logger.addHandler(handler)
 #endregion
 
 AA_list = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+
+# Custom dictionary, amino acids with similar properties are "close" to one another
 AA_to_int = {'X': 0, 'R': 1, 'H': 2, 'K': 3, 'D': 4, 'E': 5, 'S': 6, 'T': 7, 'N': 8, 'Q': 9, 'C': 10,
              'G': 11, 'P': 12, 'A': 13, 'V': 14, 'I': 15, 'L': 16, 'M': 17, 'F': 18, 'Y': 19, 'W': 20}
 int_to_AA = {x: y for y, x in AA_to_int.items()}
@@ -124,10 +126,8 @@ def load_training(seq_length, data_folder, data_augmentation=False,
                     for i in range(len(seqs)):
                         big_label_list.append([0.])
                 else:
-                    # ADD MORE THINGS HERE
-                    print('ERROR, not negative or positive list')
-                    print(dirpath)
-                    quit()
+                    # Unknown
+                    big_label_list.append([-1.])
 
                 # Fix X
                 if vectorize:
